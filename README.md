@@ -4,7 +4,7 @@
 
 This repository provides a comprehensive framework for integrating Large Language Models (LLMs) into Odoo. It allows seamless interaction with various AI providers including OpenAI, Anthropic, Ollama, and Replicate, enabling chat completions, text embeddings, and more within your Odoo environment.
 
-## 🚀 Latest Updates (Version 16.0-pr)
+## 🚀 Latest Updates (Version 17.0-pr)
 
 ### **Major Architecture Improvements**
 - **Consolidated Architecture**: Merged `llm_resource` into `llm_knowledge` and `llm_prompt` into `llm_assistant` for streamlined management
@@ -38,45 +38,45 @@ The architecture centers around five core modules that provide the foundation fo
 
 | Module | Version | Purpose |
 |--------|---------|---------|
-| **`llm`** | 16.0.1.3.0 | **Foundation** - Base infrastructure, providers, models, and enhanced messaging system |
-| **`llm_assistant`** | 16.0.1.4.0 | **Intelligence** - AI assistants with integrated prompt templates and testing |
-| **`llm_generate`** | 16.0.2.0.0 | **Generation** - Unified content generation API for text, images, and more |
-| **`llm_tool`** | 16.0.3.0.0 | **Actions** - Tool framework for LLM-Odoo interactions and function calling |
-| **`llm_store`** | 16.0.1.0.0 | **Storage** - Vector store abstraction for embeddings and similarity search |
+| **`llm`** | 17.0.1.3.0 | **Foundation** - Base infrastructure, providers, models, and enhanced messaging system |
+| **`llm_assistant`** | 17.0.1.4.0 | **Intelligence** - AI assistants with integrated prompt templates and testing |
+| **`llm_generate`** | 17.0.2.0.0 | **Generation** - Unified content generation API for text, images, and more |
+| **`llm_tool`** | 17.0.3.0.0 | **Actions** - Tool framework for LLM-Odoo interactions and function calling |
+| **`llm_store`** | 17.0.1.0.0 | **Storage** - Vector store abstraction for embeddings and similarity search |
 
 ## 📦 All Available Modules
 
 | Module | Version | Description |
 |--------|---------|-------------|
 | **Core Infrastructure** | | |
-| `llm` | 16.0.1.3.0 | Base module with providers, models, and enhanced messaging |
-| `llm_assistant` | 16.0.1.4.0 | AI assistants with integrated prompt templates |
-| `llm_generate` | 16.0.2.0.0 | Unified content generation with dynamic forms |
-| `llm_tool` | 16.0.3.0.0 | Enhanced tool framework with structured data storage |
-| `llm_store` | 16.0.1.0.0 | Vector store abstraction layer |
+| `llm` | 17.0.1.3.0 | Base module with providers, models, and enhanced messaging |
+| `llm_assistant` | 17.0.1.4.0 | AI assistants with integrated prompt templates |
+| `llm_generate` | 17.0.2.0.0 | Unified content generation with dynamic forms |
+| `llm_tool` | 17.0.3.0.0 | Enhanced tool framework with structured data storage |
+| `llm_store` | 17.0.1.0.0 | Vector store abstraction layer |
 | **Chat & Threading** | | |
-| `llm_thread` | 16.0.1.3.0 | Chat threads with PostgreSQL locking and optimized performance |
+| `llm_thread` | 17.0.1.3.0 | Chat threads with PostgreSQL locking and optimized performance |
 | **AI Providers** | | |
-| `llm_openai` | 16.0.1.1.3 | OpenAI (GPT) provider integration with enhanced tool support |
-| `llm_anthropic` | 16.0.1.1.0 | Anthropic (Claude) provider integration |
-| `llm_ollama` | 16.0.1.1.0 | Ollama provider for local model deployment |
-| `llm_mistral` | 16.0.1.0.0 | Mistral AI provider integration |
-| `llm_litellm` | 16.0.1.1.0 | LiteLLM proxy for centralized model management |
-| `llm_replicate` | 16.0.1.1.0 | Replicate.com provider integration |
-| `llm_fal_ai` | 16.0.2.0.0 | FAL.ai provider with unified generate endpoint |
+| `llm_openai` | 17.0.1.1.3 | OpenAI (GPT) provider integration with enhanced tool support |
+| `llm_anthropic` | 17.0.1.1.0 | Anthropic (Claude) provider integration |
+| `llm_ollama` | 17.0.1.1.0 | Ollama provider for local model deployment |
+| `llm_mistral` | 17.0.1.0.0 | Mistral AI provider integration |
+| `llm_litellm` | 17.0.1.1.0 | LiteLLM proxy for centralized model management |
+| `llm_replicate` | 17.0.1.1.1 | Replicate.com provider integration |
+| `llm_fal_ai` | 17.0.2.0.0 | FAL.ai provider with unified generate endpoint |
 | **Knowledge & RAG** | | |
-| `llm_knowledge` | 16.0.1.1.0 | **Consolidated** - RAG functionality with document management |
-| `llm_knowledge_automation` | 16.0.1.0.0 | Automation rules for knowledge processing |
-| `llm_tool_knowledge` | 16.0.1.0.0 | Tool for LLMs to query the knowledge base |
+| `llm_knowledge` | 17.0.1.1.0 | **Consolidated** - RAG functionality with document management |
+| `llm_knowledge_automation` | 17.0.1.0.0 | Automation rules for knowledge processing |
+| `llm_tool_knowledge` | 17.0.1.0.1 | Tool for LLMs to query the knowledge base |
 | **Vector Stores** | | |
-| `llm_chroma` | 16.0.1.0.0 | ChromaDB vector store integration |
-| `llm_pgvector` | 16.0.1.0.0 | pgvector (PostgreSQL) vector store integration |
-| `llm_qdrant` | 16.0.1.0.0 | Qdrant vector store integration |
+| `llm_chroma` | 17.0.1.0.0 | ChromaDB vector store integration |
+| `llm_pgvector` | 17.0.1.0.0 | pgvector (PostgreSQL) vector store integration |
+| `llm_qdrant` | 17.0.1.0.0 | Qdrant vector store integration |
 | **Specialized Features** | | |
-| `llm_mcp` | 16.0.1.0.0 | Model Context Protocol support |
-| `llm_training` | 16.0.1.0.0 | Fine-tuning and model training capabilities |
-| `llm_generate_job` | 16.0.1.0.0 | Job queue management for content generation |
-| `llm_document_page` | 16.0.1.0.0 | Integration with document pages and knowledge articles |
+| `llm_mcp` | 17.0.1.0.0 | Model Context Protocol support |
+| `llm_training` | 17.0.1.0.0 | Fine-tuning and model training capabilities |
+| `llm_generate_job` | 17.0.1.0.0 | Job queue management for content generation |
+| `llm_document_page` | 17.0.1.0.0 | Integration with document pages and knowledge articles |
 
 ## 🛠️ Installation
 
