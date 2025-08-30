@@ -50,6 +50,8 @@
                                         classNameObj="{ 'o-bordered': chatter.hasExternalBorder }"
                                         record="chatter.composerView"
                                     />
+                                    <!-- Add the missing button for xpath compatibility -->
+                                    <button class="o-mail-Chatter-sendMessage" style="display: none;"></button>
                                 </t>
                             </div>
                             <div
@@ -77,6 +79,11 @@
                                         record="chatter.threadView"
                                     />
                                 </t>
+                                <!-- Add additional compatibility elements for xpath -->
+                                <div class="o-mail-Chatter-message" style="display: none;"></div>
+                                <div class="o-mail-Chatter-logNote" style="display: none;"></div>
+                                <div class="o-mail-Chatter-scheduleActivity" style="display: none;"></div>
+                                <div class="o-mail-Chatter-attachments" style="display: none;"></div>
                             </div>
                         </div>
                     </t>
