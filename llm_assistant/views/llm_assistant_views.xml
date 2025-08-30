@@ -188,12 +188,27 @@
                                 </p>
                             </div>
                             <group>
+                                <!-- v17 correcto: 3 copias con options distintas y visibilidad condicional -->
                                 <field
                   name="template"
                   widget="ace"
                   readonly="1"
                   options="{'mode': 'text'}"
-                  attrs="{'options': [('template_format', '=', 'text'), {'mode': 'text'}], 'options': [('template_format', '=', 'yaml'), {'mode': 'yaml'}], 'options': [('template_format', '=', 'json'), {'mode': 'json'}]}"
+                  invisible="template_format != 'text'"
+                />
+                                <field
+                  name="template"
+                  widget="ace"
+                  readonly="1"
+                  options="{'mode': 'yaml'}"
+                  invisible="template_format != 'yaml'"
+                />
+                                <field
+                  name="template"
+                  widget="ace"
+                  readonly="1"
+                  options="{'mode': 'json'}"
+                  invisible="template_format != 'json'"
                 />
                             </group>
                             <div class="mt-3">
@@ -202,7 +217,7 @@
                   type="object"
                   string="Edit Template in Prompt"
                   class="btn-primary"
-                  attrs="{'invisible': [('prompt_id', '=', False)]}"
+                  invisible="prompt_id == False"
                 />
                                 <p class="text-muted mt-2">
                                     <i class="fa fa-info-circle" />
