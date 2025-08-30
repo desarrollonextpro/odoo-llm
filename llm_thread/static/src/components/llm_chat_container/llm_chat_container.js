@@ -57,3 +57,6 @@ Object.assign(LLMChatContainer, {
   },
   template: "llm_thread.LLMChatContainer",
 });
+
+// Make sure the component is exported
+export default LLMChatContainer;

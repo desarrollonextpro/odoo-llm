@@ -101,7 +101,7 @@ Contact: support@apexive.com
             "llm_thread/static/src/components/llm_chat_thread_related_record/llm_chat_thread_related_record.js",
             "llm_thread/static/src/components/llm_chat_thread_related_record/llm_chat_thread_related_record.xml",
             "llm_thread/static/src/components/llm_chat_thread_related_record/llm_chat_thread_related_record.scss",
-            # Client Actions
+            # Client Actions - Load after all components are ready
             "llm_thread/static/src/llm_chat_client_action.js",
             # Styles
             (

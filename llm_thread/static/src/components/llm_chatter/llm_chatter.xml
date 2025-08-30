@@ -5,88 +5,70 @@
         t-inherit="mail.Chatter"
         t-inherit-mode="extension"
     >
-        <!-- Replace the entire content of the Chatter div -->
-        <xpath expr="//div[hasclass('o-mail-Chatter')]" position="replace">
-            <t t-if="chatter">
-                <div
-                    class="o-mail-Chatter w-100 h-100 flex-grow-1 d-flex flex-column"
-                    t-att-class="{ 'overflow-auto': props.isChatterAside, 'o-chatter-disabled': props.threadId === false }"
-                    t-attf-class="{{ className }}"
-                    t-ref="root"
-                >
-                    <!-- Always keep the topbar -->
-                    <div class="o-mail-Chatter-top position-sticky top-0" t-att-class="{ 'shadow-sm': state.isTopStickyPinned }" t-ref="top">
-                        <ChatterTopbar
-                            t-if="chatter.topbar"
-                            className="'o-mail-Chatter-topbar'"
-                            record="chatter.topbar"
+        <!-- Instead of replacing, let's extend the existing structure -->
+        <!-- Add our custom topbar -->
+        <xpath expr="//div[hasclass('o-mail-Chatter-topbar')]" position="before">
+            <ChatterTopbar
+                t-if="chatter.topbar"
+                className="'o-mail-Chatter-topbar'"
+                record="chatter.topbar"
+            />
+        </xpath>
+        
+        <!-- Add conditional content based on is_chatting_with_llm -->
+        <xpath expr="//div[hasclass('o-mail-Chatter-content')]" position="replace">
+            <t t-if="chatter.is_chatting_with_llm and chatter.llmChatThread">
+                <!-- AI Chat Mode: Only show LLMChatThread -->
+                <div class="o-mail-Chatter-content d-flex flex-column flex-grow-1">
+                    <LLMChatThread
+                        className="'o-mail-Chatter-thread flex-grow-1'"
+                        record="chatter.llmChatThread"
+                        threadView="chatter.llmChatThreadView"
+                    />
+                </div>
+            </t>
+            <t t-else="">
+                <!-- Normal Mode: Show original Chatter content -->
+                <div class="o-mail-Chatter-content d-flex flex-column flex-grow-1">
+                    <t t-if="chatter.dropZoneView">
+                        <DropZone
+                            className="'o-mail-Chatter-dropZone'"
+                            record="chatter.dropZoneView"
                         />
-                    </div>
-                    
-                    <!-- Conditional content based on is_chatting_with_llm -->
-                    <t t-if="chatter.is_chatting_with_llm and chatter.llmChatThread">
-                        <!-- AI Chat Mode: Only show LLMChatThread -->
-                        <div class="o-mail-Chatter-content">
-                            <LLMChatThread
-                                className="'o-mail-Chatter-thread flex-grow-1'"
-                                record="chatter.llmChatThread"
-                                threadView="chatter.llmChatThreadView"
+                    </t>
+                    <div class="o-mail-Chatter-fixedPanel">
+                        <t t-if="chatter.composerView">
+                            <Composer
+                                className="'o-mail-Chatter-composer border-bottom'"
+                                classNameObj="{ 'o-bordered': chatter.hasExternalBorder }"
+                                record="chatter.composerView"
                             />
-                        </div>
-                    </t>
-                    <t t-else="">
-                        <!-- Normal Mode: Show original Chatter content -->
-                        <div class="o-mail-Chatter-content">
-                            <t t-if="chatter.dropZoneView">
-                                <DropZone
-                                    className="'o-mail-Chatter-dropZone'"
-                                    record="chatter.dropZoneView"
-                                />
-                            </t>
-                            <div class="o-mail-Chatter-fixedPanel">
-                                <t t-if="chatter.composerView">
-                                    <Composer
-                                        className="'o-mail-Chatter-composer border-bottom'"
-                                        classNameObj="{ 'o-bordered': chatter.hasExternalBorder }"
-                                        record="chatter.composerView"
-                                    />
-                                    <!-- Add the missing button for xpath compatibility -->
-                                    <button class="o-mail-Chatter-sendMessage" style="display: none;"></button>
-                                </t>
-                            </div>
-                            <div
-                                class="o-mail-Chatter-scrollPanel overflow-auto flex-grow-1"
-                                t-on-scroll="chatter.onScrollScrollPanel"
-                                t-ref="scrollPanel"
-                            >
-                                <t t-if="chatter.attachmentBoxView">
-                                    <AttachmentBox
-                                        className="'o-mail-Chatter-attachmentBox'"
-                                        record="chatter.attachmentBoxView"
-                                    />
-                                </t>
-                                <t t-if="chatter.activityBoxView">
-                                    <ActivityBox
-                                        className="'o-mail-Chatter-activityBox'"
-                                        record="chatter.activityBoxView"
-                                    />
-                                    <!-- Add the missing element for xpath compatibility -->
-                                    <div class="o-mail-Chatter-activity" style="display: none;"></div>
-                                </t>
-                                <t t-if="chatter.threadView">
-                                    <ThreadView
-                                        className="'o-mail-Chatter-thread'"
-                                        record="chatter.threadView"
-                                    />
-                                </t>
-                                <!-- Add additional compatibility elements for xpath -->
-                                <div class="o-mail-Chatter-message" style="display: none;"></div>
-                                <div class="o-mail-Chatter-logNote" style="display: none;"></div>
-                                <div class="o-mail-Chatter-scheduleActivity" style="display: none;"></div>
-                                <div class="o-mail-Chatter-attachments" style="display: none;"></div>
-                            </div>
-                        </div>
-                    </t>
+                        </t>
+                    </div>
+                    <div
+                        class="o-mail-Chatter-scrollPanel overflow-auto flex-grow-1"
+                        t-on-scroll="chatter.onScrollScrollPanel"
+                        t-ref="scrollPanel"
+                    >
+                        <t t-if="chatter.attachmentBoxView">
+                            <AttachmentBox
+                                className="'o-mail-Chatter-attachmentBox'"
+                                record="chatter.attachmentBoxView"
+                            />
+                        </t>
+                        <t t-if="chatter.activityBoxView">
+                            <ActivityBox
+                                className="'o-mail-Chatter-activityBox'"
+                                record="chatter.activityBoxView"
+                            />
+                        </t>
+                        <t t-if="chatter.threadView">
+                            <ThreadView
+                                className="'o-mail-Chatter-thread'"
+                                record="chatter.threadView"
+                            />
+                        </t>
+                    </div>
                 </div>
             </t>
         </xpath>
