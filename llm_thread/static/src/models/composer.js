@@ -34,10 +34,10 @@ registerPatch({
 
       const messageBody = this.textInputContent.trim();
       if (!messageBody || !thread) {
-        this.messaging.notify({
-          message: this.env._t("Please enter a message."),
-          type: "danger",
-        });
+        this.env.services.notification.add(
+          this.env._t("Please enter a message."),
+          { type: "danger" }
+        );
         return;
       }
 
@@ -65,18 +65,16 @@ registerPatch({
               break;
             case "error":
               this._closeEventSource();
-              this.messaging.notify({ message: data.error, type: "danger" });
+              this.env.services.notification.add(data.error, { type: "danger" });
               break;
             case "done": {
               const sameThread =
                 this.thread.id === this.thread.llmChat.activeThread.id;
               if (!sameThread) {
-                this.messaging.notify({
-                  message:
-                    this.env._t("Generation completed for ") +
-                    this.thread.displayName,
-                  type: "success",
-                });
+                this.env.services.notification.add(
+                  this.env._t("Generation completed for ") + this.thread.displayName,
+                  { type: "success" }
+                );
               }
               this._closeEventSource();
               break;
@@ -85,18 +83,18 @@ registerPatch({
         };
         eventSource.onerror = (error) => {
           console.error("EventSource failed:", error);
-          this.messaging.notify({
-            message: this.env._t("An unknown error occurred"),
-            type: "danger",
-          });
+          this.env.services.notification.add(
+            this.env._t("An unknown error occurred"),
+            { type: "danger" }
+          );
           this._closeEventSource();
         };
       } catch (error) {
         console.error("Error sending LLM message:", error);
-        this.messaging.notify({
-          message: this.env._t("Failed to send message."),
-          type: "danger",
-        });
+        this.env.services.notification.add(
+          this.env._t("Failed to send message."),
+          { type: "danger" }
+        );
       } finally {
         for (const composerView of this.composerViews) {
           composerView.update({ doFocus: true });

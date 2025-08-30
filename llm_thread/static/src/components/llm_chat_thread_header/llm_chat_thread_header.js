@@ -1,9 +1,7 @@
 /** @odoo-module **/
 import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { useRefToModel } from "@mail/component_hooks/use_ref_to_model";
-
-const { Component, useState, useRef, onMounted, onWillUnmount, onPatched } =
-  owl;
+import { Component, useState, useRef, onMounted, onWillUnmount, onPatched } from "@odoo/owl";
 
 export class LLMChatThreadHeader extends Component {
   /**

@@ -238,11 +238,10 @@ registerModel({
     async createThread({ name, relatedThreadModel, relatedThreadId }) {
       const defaultModel = this.defaultLLMModel;
       if (!defaultModel) {
-        this.messaging.notify({
-          title: "No LLMModel available",
-          message: "Please add a new LLMModel to use this feature",
-          type: "warning",
-        });
+        this.env.services.notification.add(
+          "Please add a new LLMModel to use this feature",
+          { type: "warning", title: "No LLMModel available" }
+        );
         // Throw an error instead of returning null to make the failure more explicit
         throw new Error("No LLM model available");
       }
@@ -270,11 +269,10 @@ registerModel({
       });
 
       if (!threadDetails || !threadDetails[0]) {
-        this.messaging.notify({
-          title: "Error",
-          message: "Failed to create thread",
-          type: "danger",
-        });
+        this.env.services.notification.add(
+          "Failed to create thread",
+          { type: "danger", title: "Error" }
+        );
         return null;
       }
 

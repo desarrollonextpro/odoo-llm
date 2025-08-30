@@ -2,8 +2,7 @@
 
 import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { useModels } from "@mail/component_hooks/use_models";
-
-const { Component, useState } = owl;
+import { Component, useState } from "@odoo/owl";
 
 export class LLMChatThreadList extends Component {
   setup() {
@@ -43,11 +42,10 @@ export class LLMChatThreadList extends Component {
       });
     } catch (error) {
       console.error("Error selecting thread:", error);
-      this.messaging.notify({
-        title: "Error",
-        message: "Failed to load thread",
-        type: "danger",
-      });
+      this.env.services.notification.add(
+        "Failed to load thread",
+        { type: "danger", title: "Error" }
+      );
     } finally {
       this.state.isLoading = false;
     }

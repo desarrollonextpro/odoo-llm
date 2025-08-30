@@ -2,8 +2,7 @@
 
 import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { useModels } from "@mail/component_hooks/use_models";
-
-const { Component, useState, onMounted } = owl;
+import { Component, useState, onMounted } from "@odoo/owl";
 
 export class LLMChatThreadRelatedRecord extends Component {
   setup() {
@@ -139,10 +138,10 @@ export class LLMChatThreadRelatedRecord extends Component {
       });
     } catch (error) {
       console.error("Error opening related record:", error);
-      this.messaging.notify({
-        message: this.env._t("Failed to open related record"),
-        type: "danger",
-      });
+      this.env.services.notification.add(
+        this.env._t("Failed to open related record"),
+        { type: "danger" }
+      );
     }
   }
 
@@ -155,10 +154,10 @@ export class LLMChatThreadRelatedRecord extends Component {
       const models = await this._getAvailableModels();
 
       if (models.length === 0) {
-        this.messaging.notify({
-          message: this.env._t("No models available for linking"),
-          type: "warning",
-        });
+        this.env.services.notification.add(
+          this.env._t("No models available for linking"),
+          { type: "warning" }
+        );
         return;
       }
 
@@ -166,10 +165,10 @@ export class LLMChatThreadRelatedRecord extends Component {
       this._openRecordPickerDialog(models);
     } catch (error) {
       console.error("Error opening record picker:", error);
-      this.messaging.notify({
-        message: this.env._t("Failed to open record picker"),
-        type: "danger",
-      });
+      this.env.services.notification.add(
+        this.env._t("Failed to open record picker"),
+        { type: "danger" }
+      );
     }
   }
 
@@ -215,16 +214,16 @@ export class LLMChatThreadRelatedRecord extends Component {
       // Clear the display name
       this.state.relatedRecordDisplayName = "";
 
-      this.messaging.notify({
-        message: this.env._t("Record unlinked successfully"),
-        type: "success",
-      });
+      this.env.services.notification.add(
+        this.env._t("Record unlinked successfully"),
+        { type: "success" }
+      );
     } catch (error) {
       console.error("Error unlinking record:", error);
-      this.messaging.notify({
-        message: this.env._t("Failed to unlink record"),
-        type: "danger",
-      });
+      this.env.services.notification.add(
+        this.env._t("Failed to unlink record"),
+        { type: "danger" }
+      );
     }
   }
 
@@ -517,18 +516,18 @@ export class LLMChatThreadRelatedRecord extends Component {
         try {
           await this._linkRecordToThread(selectedModel, selectedRecordId);
           modal.hide();
-          this.messaging.notify({
-            message: this.env._t("Record linked successfully"),
-            type: "success",
-          });
+          this.env.services.notification.add(
+            this.env._t("Record linked successfully"),
+            { type: "success" }
+          );
           // Reload the display name
           await this._loadRelatedRecordDisplayName();
         } catch (error) {
           console.error("Error linking record:", error);
-          this.messaging.notify({
-            message: this.env._t("Failed to link record"),
-            type: "danger",
-          });
+          this.env.services.notification.add(
+            this.env._t("Failed to link record"),
+            { type: "danger" }
+          );
         }
       }
     });

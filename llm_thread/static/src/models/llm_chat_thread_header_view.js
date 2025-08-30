@@ -186,10 +186,10 @@ registerModel({
         });
       } catch (error) {
         console.error("Error updating thread name:", error);
-        this.messaging.notify({
-          message: this.env._t("Failed to update thread name"),
-          type: "danger",
-        });
+        this.env.services.notification.add(
+          this.env._t("Failed to update thread name"),
+          { type: "danger" }
+        );
         this.discardThreadNameEdition();
       }
     },
