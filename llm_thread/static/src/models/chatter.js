@@ -116,11 +116,10 @@ registerPatch({
           await llmChat.selectThread(thread.id);
           this.update({ is_chatting_with_llm: true });
         } catch (error) {
-          messaging.notify({
-            title: "Failed to Start AI Chat",
-            message: error.message || "An error occurred",
-            type: "danger",
-          });
+          this.env.services.notification.add(
+            error.message || "An error occurred",
+            { type: "danger", title: "Failed to Start AI Chat" }
+          );
         }
       }
     },
