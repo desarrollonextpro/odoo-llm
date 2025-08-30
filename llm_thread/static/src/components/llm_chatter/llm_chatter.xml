@@ -68,6 +68,8 @@
                                         className="'o-mail-Chatter-activityBox'"
                                         record="chatter.activityBoxView"
                                     />
+                                    <!-- Add the missing element for xpath compatibility -->
+                                    <div class="o-mail-Chatter-activity" style="display: none;"></div>
                                 </t>
                                 <t t-if="chatter.threadView">
                                     <ThreadView
