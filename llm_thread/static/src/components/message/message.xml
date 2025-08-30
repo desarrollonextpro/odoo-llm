@@ -5,10 +5,10 @@
     <!-- Sub-templates for different message content types                    -->
     <!-- ====================================================================== -->
 
-    <t t-name="llm_thread.Message.AssistantContent" owl="1">
+    <t t-name="llm_thread.Message.AssistantContent">
         <!-- Render final message body (processed by mail) -->
         <t t-if="!messageView.composerViewInEditing">
-            <div class="o_Message_prettyBody" t-ref="prettyBody" />
+            <div class="o-mail-Message-prettyBody" t-ref="prettyBody" />
         </t>
         <!-- Display requested tool calls if any -->
         <t
@@ -33,8 +33,8 @@
         </t>
     </t>
 
-    <t t-name="llm_thread.Message.ToolResultContent" owl="1">
-        <div class="o_Message_prettyBody o_llm_tool_result">
+    <t t-name="llm_thread.Message.ToolResultContent">
+        <div class="o-mail-Message-prettyBody o_llm_tool_result">
             <div class="o_llm_tool_result_header small mb-1">
                 <!-- Show human-readable status from display_body -->
                 <p class="mb-2" t-ref="prettyBody" />
@@ -83,15 +83,15 @@
         </div>
     </t>
 
-    <t t-name="llm_thread.Message.DefaultContent" owl="1">
+    <t t-name="llm_thread.Message.DefaultContent">
         <t t-if="!messageView.composerViewInEditing">
-            <div class="o_Message_prettyBody" t-ref="prettyBody" />
+            <div class="o-mail-Message-prettyBody" t-ref="prettyBody" />
         </t>
         <t t-if="messageView.composerViewInEditing">
             <Composer
-        className="'o_Message_composer'"
-        record="messageView.composerViewInEditing"
-      />
+                className="'o-mail-Message-composer'"
+                record="messageView.composerViewInEditing"
+            />
         </t>
         <t
       t-if="messageView.message.subtype_description and !messageView.message.isBodyEqualSubtypeDescription"
@@ -99,7 +99,7 @@
             <p t-esc="messageView.message.subtype_description" class="mb-0" />
         </t>
         <t t-if="messageView.message.trackingValues.length > 0">
-            <ul class="o_Message_trackingValues mb-0 ps-4">
+            <ul class="o-mail-Message-trackingValues mb-0 ps-4">
                 <t
           t-foreach="messageView.message.trackingValues"
           t-as="trackingValue"
@@ -118,24 +118,24 @@
     <!-- ====================================================================== -->
 
     <t
-    t-name="llm_thread.Message"
-    t-inherit="mail.Message"
-    t-inherit-mode="extension"
-    owl="1"
-  >
+        t-name="llm_thread.Message"
+        t-inherit="mail.Message"
+        t-inherit-mode="extension"
+    >
         <!--
         Replace the main content rendering area.
         We use the stored llm_role field for direct comparison.
         -->
-        <xpath expr="//div[hasclass('o_Message_content')]" position="replace">
+        <xpath expr="//div[hasclass('o-mail-Message-content')]" position="replace">
             <div
-        class="o_Message_content position-relative text-break"
-        t-att-class="{
+                class="o-mail-Message-content o-min-width-0 position-relative text-break"
+                t-att-class="{
                     'opacity-75': messageView.message.isSquashed,
-                    'o_Message_content--failed': messageView.message.isFailed,
-                 }"
-        t-ref="content"
-      >
+                    'o-mail-Message-content--failed': messageView.message.isFailed,
+                    'w-100': state.isEditing
+                }"
+                t-ref="content"
+            >
 
                 <!-- Use the stored llm_role field for direct comparison -->
                 <t t-if="messageView.message.llmRole === 'assistant'">
@@ -148,7 +148,7 @@
                     <t t-call="llm_thread.Message.DefaultContent" />
                 </t>
 
-                <div class="o_Message_linkPreviews" />
+                <div class="o-mail-Message-linkPreviews" />
             </div>
         </xpath>
     </t>

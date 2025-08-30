@@ -2,13 +2,12 @@
 <templates xml:space="preserve">
     <!-- Extension of the main Message template to handle generation messages -->
     <t
-    t-name="llm_generate.Message"
-    t-inherit="mail.Message"
-    t-inherit-mode="extension"
-    owl="1"
-  >
+        t-name="llm_generate.Message"
+        t-inherit="mail.Message"
+        t-inherit-mode="extension"
+    >
         <!-- Target the content area where message body is displayed -->
-        <xpath expr="//div[hasclass('o_Message_content')]" position="inside">
+        <xpath expr="//div[hasclass('o-mail-Message-content')]" position="inside">
             <!-- Add generation parameters display for user messages with generation data -->
             <t t-if="messageView.message.isLLMUserGenerationMessage">
                 <!-- Generation Parameters Summary -->
