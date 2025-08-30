@@ -127,27 +127,52 @@
         We use the stored llm_role field for direct comparison.
         -->
         <xpath expr="//div[hasclass('o-mail-Message-content')]" position="replace">
-            <div
-                class="o-mail-Message-content o-min-width-0 position-relative text-break"
-                t-att-class="{
-                    'opacity-75': messageView.message.isSquashed,
-                    'o-mail-Message-content--failed': messageView.message.isFailed,
-                    'w-100': state.isEditing
-                }"
-                t-ref="content"
-            >
-
-                <!-- Use the stored llm_role field for direct comparison -->
-                <t t-if="messageView.message.llmRole === 'assistant'">
-                    <t t-call="llm_thread.Message.AssistantContent" />
-                </t>
-                <t t-elif="messageView.message.llmRole === 'tool'">
-                    <t t-call="llm_thread.Message.ToolResultContent" />
-                </t>
-                <t t-else="">
-                    <t t-call="llm_thread.Message.DefaultContent" />
-                </t>
-
+            <div class="o-mail-Message-content o-min-width-0" t-att-class="{ 'w-100': state.isEditing }">
+                <div class="o-mail-Message-textContent position-relative d-flex" t-att-class="{ 'w-100': state.isEditing }">
+                    <t t-if="messageView.message.type !== 'notification' and !messageView.message.is_transient and (messageView.message.hasTextContent or messageView.message.subtype_description or state.isEditing)">
+                        <div class="position-relative overflow-x-auto d-inline-block" t-att-class="{ 'w-100': state.isEditing }">
+                            <div class="o-mail-Message-bubble rounded-bottom-3 position-absolute top-0 start-0 w-100 h-100" t-att-class="{
+                                'border': state.isEditing and !messageView.message.is_note,
+                                'bg-info-light border border-info opacity-25': !messageView.message.isSelfAuthored and !messageView.message.is_note and !messageView.message.isHighlightedFromMention,
+                                'bg-success-light border border-success opacity-25': messageView.message.isSelfAuthored and !messageView.message.is_note and !messageView.message.isHighlightedFromMention,
+                                'bg-warning-light border border-warning opacity-50': messageView.message.isHighlightedFromMention,
+                                }" t-attf-class="{{ isAlignedRight ? 'rounded-start-3' : 'rounded-end-3' }}"/>
+                            
+                            <div class="position-relative text-break p-2" t-att-class="{
+                                'opacity-75': messageView.message.isSquashed,
+                                'o-mail-Message-content--failed': messageView.message.isFailed
+                            }">
+                                <!-- Use the stored llm_role field for direct comparison -->
+                                <t t-if="messageView.message.llmRole === 'assistant'">
+                                    <t t-call="llm_thread.Message.AssistantContent" />
+                                </t>
+                                <t t-elif="messageView.message.llmRole === 'tool'">
+                                    <t t-call="llm_thread.Message.ToolResultContent" />
+                                </t>
+                                <t t-else="">
+                                    <t t-call="llm_thread.Message.DefaultContent" />
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <!-- Fallback for notification messages without bubble -->
+                        <div class="position-relative text-break" t-att-class="{
+                            'opacity-75': messageView.message.isSquashed,
+                            'o-mail-Message-content--failed': messageView.message.isFailed
+                        }">
+                            <t t-if="messageView.message.llmRole === 'assistant'">
+                                <t t-call="llm_thread.Message.AssistantContent" />
+                            </t>
+                            <t t-elif="messageView.message.llmRole === 'tool'">
+                                <t t-call="llm_thread.Message.ToolResultContent" />
+                            </t>
+                            <t t-else="">
+                                <t t-call="llm_thread.Message.DefaultContent" />
+                            </t>
+                        </div>
+                    </t>
+                </div>
                 <div class="o-mail-Message-linkPreviews" />
             </div>
         </xpath>
