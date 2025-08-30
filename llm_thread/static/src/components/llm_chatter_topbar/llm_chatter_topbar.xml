@@ -5,14 +5,14 @@
         t-inherit="mail.Chatter"
         t-inherit-mode="extension"
     >
-        <!-- Insert AI button after the Activities button in the topbar -->
+        <!-- Insert AI button before the topbar grow spacer -->
         <xpath
-            expr="//button[hasclass('o-mail-Chatter-activity')]"
-            position="after"
+            expr="//span[hasclass('o-mail-Chatter-topbarGrow')]"
+            position="before"
         >
-            <!-- AI Chat Button inserted next to Activities -->
+            <!-- AI Chat Button inserted in the flex area -->
             <button
-                t-attf-class="o-mail-Chatter-ai btn btn-secondary text-nowrap ms-1 {{ chatter.is_chatting_with_llm ? 'btn-primary o-active' : 'btn-secondary' }}"
+                t-attf-class="o-mail-Chatter-ai btn btn-secondary text-nowrap me-1 {{ chatter.is_chatting_with_llm ? 'btn-primary o-active' : 'btn-secondary' }}"
                 t-att-class="{ 'my-2': !props.compactHeight }"
                 type="button"
                 t-on-click="chatter.toggleLLMChat"
