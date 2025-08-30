@@ -28,20 +28,20 @@
             string="Start Server"
             type="object"
             class="oe_highlight"
-            attrs="{'invisible': [('is_connected', '=', True)]}"
+            invisible="is_connected == True"
           />
                     <button
             name="stop_server"
             string="Stop Server"
             type="object"
-            attrs="{'invisible': [('is_connected', '=', False)]}"
+            invisible="is_connected == False"
           />
                     <button
             name="list_tools"
             string="Refresh Tools"
             type="object"
             class="oe_highlight"
-            attrs="{'invisible': [('is_connected', '=', False)]}"
+            invisible="is_connected == False"
           />
                 </header>
                 <sheet>
@@ -60,18 +60,18 @@
                         </group>
                         <group
               string="Command Configuration"
-              attrs="{'invisible': [('transport', '!=', 'stdio')]}"
+              invisible="transport != 'stdio'"
             >
                             <field
                 name="command"
-                attrs="{'required': [('transport', '=', 'stdio')]}"
+                required="transport == 'stdio'"
               />
                             <field name="args" />
                         </group>
                     </group>
                     <group
             string="Server Information"
-            attrs="{'invisible': [('is_connected', '=', False)]}"
+            invisible="is_connected == False"
           >
                         <field name="protocol_version" readonly="1" />
                         <field name="server_info" readonly="1" />

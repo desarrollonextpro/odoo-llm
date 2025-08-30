@@ -48,7 +48,7 @@
               type="object"
               class="oe_stat_button"
               icon="fa-file-text-o"
-              attrs="{'invisible': [('prompt_id', '=', False)]}"
+              invisible="prompt_id == False"
             >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
@@ -99,7 +99,7 @@
                             <field
                 name="allowed_group_ids"
                 widget="many2many_tags"
-                attrs="{'invisible': [('is_public', '=', True)]}"
+                invisible="is_public == True"
                 options="{'no_create': True}"
               />
                         </group>
@@ -124,7 +124,7 @@
                   string="Reset Defaults"
                   type="object"
                   class="btn-secondary"
-                  attrs="{'invisible': [('prompt_id', '=', False)]}"
+                  invisible="prompt_id == False"
                   help="Reset default values from the prompt template's argument schema defaults"
                 />
                             </div>

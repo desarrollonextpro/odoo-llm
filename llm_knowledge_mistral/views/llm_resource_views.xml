@@ -10,7 +10,7 @@
             <xpath expr="//field[@name='parser']" position="after">
                 <div
           colspan="2"
-          attrs="{'invisible': [('parser', '!=', 'mistral_ocr')]}"
+          invisible="parser != 'mistral_ocr'"
         >
                     <p class="text-muted">
                         <i
@@ -19,12 +19,14 @@
                 </div>
                 <field
           name="llm_provider_id"
-          attrs="{'invisible': [('parser', '!=', 'mistral_ocr')], 'required': [('parser', '=', 'mistral_ocr')]}"
+          invisible="parser != 'mistral_ocr'"
+          required="parser == 'mistral_ocr'"
           options="{'no_create': True}"
         />
                 <field
           name="llm_model_id"
-          attrs="{'invisible': [('parser', '!=', 'mistral_ocr')], 'required': [('parser', '=', 'mistral_ocr')]}"
+          invisible="parser != 'mistral_ocr'"
+          required="parser == 'mistral_ocr'"
           options="{'no_create': True}"
           domain="[('provider_id', '=', llm_provider_id), ('model_use', '=', 'ocr')]"
         />

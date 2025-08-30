@@ -30,10 +30,10 @@
                 <form>
                     <header>
                         <button name="action_enable" string="Enable" type="object" 
-                                attrs="{'invisible': [('enabled', '=', True)]}"
+                                invisible="enabled == True"
                                 class="btn-success"/>
                         <button name="action_disable" string="Disable" type="object" 
-                                attrs="{'invisible': [('enabled', '=', False)]}"
+                                invisible="enabled == False"
                                 class="btn-warning"/>
                         <button name="action_process_queue" string="Process Queue" type="object" 
                                 class="btn-primary"/>
@@ -82,7 +82,7 @@
                                 <field name="enabled"/>
                                 <field name="max_concurrent_jobs"/>
                                 <field name="auto_retry_failed"/>
-                                <field name="retry_delay_minutes" attrs="{'invisible': [('auto_retry_failed', '=', False)]}"/>
+                                <field name="retry_delay_minutes" invisible="auto_retry_failed == False"/>
                             </group>
                             <group string="Status">
                                 <field name="queue_health"/>

@@ -10,7 +10,7 @@
           name="source_url"
           widget="url"
           readonly="1"
-          attrs="{'invisible': [('source_url', '=', False)]}"
+                          invisible="source_url == False"
         />
             </xpath>
         </field>

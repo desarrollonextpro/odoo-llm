@@ -109,7 +109,7 @@
                     </group>
                     <group
             string="Metadata"
-            attrs="{'invisible': [('metadata', '=', False)]}"
+            invisible="metadata == False"
           >
                         <field
               name="metadata"

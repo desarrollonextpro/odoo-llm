@@ -13,7 +13,7 @@
           type="object"
           class="btn-primary"
           icon="fa-cloud-upload"
-          attrs="{'invisible': [('service', '!=', 'litellm')]}"
+                          invisible="service != 'litellm'"
         />
             </header>
         </field>

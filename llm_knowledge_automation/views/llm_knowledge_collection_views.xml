@@ -19,7 +19,7 @@
           string="Sync Automated Actions"
           type="object"
           class="btn-primary"
-          attrs="{'invisible': [('domain_ids', '=', [])]}"
+          invisible="domain_ids == []"
           help="Create or update automated actions for this collection's domain filters"
         />
             </xpath>
@@ -32,12 +32,12 @@
                         <field
               name="auto_process_resources"
               widget="boolean_toggle"
-              attrs="{'invisible': [('automated_sync', '=', False)]}"
+              invisible="automated_sync == False"
             />
                     </group>
 
                     <div
-            attrs="{'invisible': [('automated_sync', '=', False)]}"
+            invisible="automated_sync == False"
           >
                         <!-- Display automated actions -->
                         <field name="automation_ids" readonly="1">
@@ -50,7 +50,7 @@
                         </field>
                     </div>
 
-                    <div attrs="{'invisible': [('automated_sync', '=', True)]}">
+                    <div invisible="automated_sync == True">
                         <div class="alert alert-info" role="alert">
                             <p>Enable <strong
                 >Automated Sync</strong> to create automated actions that will keep this collection synchronized with its domain filters.</p>
