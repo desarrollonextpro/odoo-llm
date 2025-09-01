@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
-  <!-- ======= Sub-templates (iguales a los tuyos, si ya los tienes cargados) ======= -->
-  <!-- Si ya los declaraste en otro archivo, omite esta sección y solo deja la extensión -->
-
-  <t t-name="llm_thread.Message.AssistantContent" owl="1">
+  <!-- Sub-templates -->
+  <t t-name="llm_thread.Message.AssistantContent">
     <t t-if="!state.isEditing">
       <div class="o-mail-Message-prettyBody o_Message_prettyBody" t-ref="prettyBody"/>
     </t>
@@ -22,7 +20,7 @@
     </t>
   </t>
 
-  <t t-name="llm_thread.Message.ToolResultContent" owl="1">
+  <t t-name="llm_thread.Message.ToolResultContent">
     <div class="o-mail-Message-prettyBody o_Message_prettyBody o_llm_tool_result">
       <div class="o_llm_tool_result_header small mb-1">
         <p class="mb-2" t-ref="prettyBody"/>
@@ -55,7 +53,7 @@
     </div>
   </t>
 
-  <t t-name="llm_thread.Message.DefaultContent" owl="1">
+  <t t-name="llm_thread.Message.DefaultContent">
     <t t-if="!state.isEditing">
       <div class="o-mail-Message-prettyBody o_Message_prettyBody" t-ref="prettyBody"/>
     </t>
@@ -71,13 +69,11 @@
     <t t-if="showSubtypeDescription" t-out="props.messageSearch?.highlight(message.subtype_description) ?? message.subtype_description"/>
   </t>
 
-  <!-- ======= Extensión principal: reemplaza SOLO el cuerpo ======= -->
+  <!-- Extensión del cuerpo -->
   <t t-name="llm_thread.MessageExtension"
      t-inherit="mail.Message"
-     t-inherit-mode="extension"
-     owl="1">
+     t-inherit-mode="extension">
 
-    <!-- Sustituimos el bloque 'o-mail-Message-body' conservando t-ref="body" -->
     <xpath expr="//div[contains(@class,'o-mail-Message-body')]" position="replace">
       <div class="position-relative text-break o-mail-Message-body"
            t-att-class="{
@@ -88,7 +84,6 @@
            }"
            t-ref="body">
 
-        <!-- Si está en modo edición, mantiene el comportamiento nativo -->
         <t t-if="state.isEditing">
           <Composer autofocus="true"
                     composer="message.composer"
@@ -99,23 +94,18 @@
                     sidebar="false"/>
         </t>
 
-        <!-- Si NO está editando, decidimos por llmRole -->
         <t t-else="">
-          <!-- Subject (igual que base v17, antes del cuerpo) -->
           <em t-if="message.subject and !message.isSubjectSimilarToOriginThreadName and !message.isSubjectDefault"
               class="mb-1 me-2">Subject:
             <t t-out="props.messageSearch?.highlight(message.subject) ?? message.subject"/>
           </em>
 
-          <!-- LLM roles -->
           <t t-if="message.llmRole === 'assistant'">
             <t t-call="llm_thread.Message.AssistantContent"/>
           </t>
           <t t-elif="message.llmRole === 'tool'">
             <t t-call="llm_thread.Message.ToolResultContent"/>
           </t>
-
-          <!-- Fallback al comportamiento nativo cuando no es LLM -->
           <t t-else="">
             <div class="overflow-x-auto" t-if="message.type && message.type.includes('email')" t-ref="shadowBody"/>
             <t t-elif="state.showTranslation" t-out="message.translationValue"/>
