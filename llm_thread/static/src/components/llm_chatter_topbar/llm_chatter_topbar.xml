@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-  <!-- Extiende el topbar del Chatter en v17 -->
-  <t t-name="llm_thread.Chatter"
+  <t t-name="llm_thread.ChatterExtension"
      t-inherit="mail.Chatter"
      t-inherit-mode="extension"
      owl="1">
 
-    <!-- Caso 1: insertar DESPUÉS del botón Activities -->
-    <xpath expr="//div[contains(@class,'o-mail-Chatter-topbar')]//button[hasclass('o-mail-Chatter-activity')]" position="after">
-      <!-- separador visual opcional -->
+    <!-- Caso A: insertar DESPUÉS del botón Activities -->
+    <xpath expr="//div[contains(@class,'o-mail-Chatter-topbar')]//button[hasclass('o-mail-Chatter-activity')]"
+           position="after">
       <span class="ms-2" style="border-left: 1px solid var(--border); height: auto;"></span>
       <button
         class="o-mail-Chatter-llm btn text-nowrap ms-2"
-        t-att-class="(state.isChattingWithLLM ? 'btn-primary active' : 'btn-secondary') + (props.compactHeight ? '' : ' my-2')"
+        t-att-class="(state.is_chatting_with_llm ? 'btn-primary active' : 'btn-secondary') + (props.compactHeight ? '' : ' my-2')"
         t-att-disabled="!props.threadId"
         t-on-click="toggleLLMChat">
         <span>AI</span>
       </button>
     </xpath>
 
-    <!-- Caso 2: si no hay Activities, insertar ANTES del spacer para que igual aparezca -->
-    <xpath expr="//div[contains(@class,'o-mail-Chatter-topbar')]//span[hasclass('o-mail-Chatter-topbarGrow')]" position="before">
+    <!-- Caso B: si no hay Activities, insertar ANTES del spacer -->
+    <xpath expr="//div[contains(@class,'o-mail-Chatter-topbar')]//span[hasclass('o-mail-Chatter-topbarGrow')]"
+           position="before">
       <button
         class="o-mail-Chatter-llm btn text-nowrap me-2"
-        t-att-class="(state.isChattingWithLLM ? 'btn-primary active' : 'btn-secondary') + (props.compactHeight ? '' : ' my-2')"
+        t-att-class="(state.is_chatting_with_llm ? 'btn-primary active' : 'btn-secondary') + (props.compactHeight ? '' : ' my-2')"
         t-att-disabled="!props.threadId"
         t-on-click="toggleLLMChat">
         <span>AI</span>

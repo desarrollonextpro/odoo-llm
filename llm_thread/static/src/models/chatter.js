@@ -1,127 +1,116 @@
 /** @odoo-module **/
 
-import { attr, one } from "@mail/model/model_field";
-import { clear } from "@mail/model/model_field_command";
-import { registerPatch } from "@mail/model/model_core";
+import { patch } from "@web/core/utils/patch";
+import { Chatter } from "@mail/components/chatter/chatter";
 
-registerPatch({
-  name: "Chatter",
-  fields: {
-    is_chatting_with_llm: attr({ default: false }),
-    llmChatThread: one("Thread", {
-      compute() {
-        if (!this.is_chatting_with_llm || !this.llmChatThreadView) {
-          return clear();
+patch(Chatter.prototype, "llm_thread.ChatterLLM", {
+    setup() {
+        this._super(...arguments);
+
+        // Estado y refs con los mismos nombres que usas en tu vista
+        if (this.state.is_chatting_with_llm === undefined) {
+            this.state.is_chatting_with_llm = false;
         }
-        return this.llmChatThreadView.thread;
-      },
-    }),
-    llmChatThreadView: one("ThreadView", {
-      compute() {
-        if (!this.is_chatting_with_llm || !this.thread) {
-          return clear();
-        }
-        const llmChat = this.messaging.llmChat;
-        if (!llmChat || !llmChat.activeThread || !llmChat.llmChatView) {
-          return clear();
-        }
-        return {
-          threadViewer: llmChat.llmChatView.threadViewer,
-          messageListView: {},
-          llmChatThreadHeaderView: {},
-        };
-      },
-    }),
-  },
-  recordMethods: {
-    /**
-     * @override
-     */
-    onClickSendMessage(ev) {
-      if (this.is_chatting_with_llm) {
-        this.toggleLLMChat();
-      }
-      this._super(ev);
+        this.llmChatThread = null;
+        this.llmChatThreadView = null;
     },
 
     /**
-     * @override
-     */
-    onClickLogNote(ev) {
-      if (this.is_chatting_with_llm) {
-        this.toggleLLMChat();
-      }
-      this._super(ev);
-    },
-
-    /**
-     * @override
-     */
-    onClickScheduleActivity(ev) {
-      if (this.is_chatting_with_llm) {
-        this.toggleLLMChat();
-      }
-      this._super(ev);
-    },
-
-    /**
-     * @override
-     */
-    onClickButtonAddAttachments(ev) {
-      if (this.is_chatting_with_llm) {
-        this.toggleLLMChat();
-      }
-      this._super(ev);
-    },
-
-    /**
-     * @override
-     */
-    onClickButtonToggleAttachments(ev) {
-      if (this.is_chatting_with_llm) {
-        this.toggleLLMChat();
-      }
-      this._super(ev);
-    },
-
-    /**
-     * Toggles LLM chat mode, initializing LLMChat and selecting/creating a thread.
+     * Alterna el modo LLM. Equivalente a tu versión previa,
+     * pero ahora como método del componente (v17).
      */
     async toggleLLMChat() {
-      if (!this.thread) return;
-
-      const messaging = this.messaging;
-      if (this.is_chatting_with_llm === true) {
-        // Already chatting with LLM
-        this.update({ is_chatting_with_llm: false });
-      } else {
-        let llmChat = messaging.llmChat;
-        if (!llmChat) {
-          messaging.update({ llmChat: { isInitThreadHandled: false } });
-          llmChat = messaging.llmChat;
+        const thread = this.state?.thread;
+        if (!thread) {
+            return;
         }
-        if (!llmChat.llmChatView) {
-          llmChat.open();
+
+        const messaging = this.env?.services?.messaging || {};
+
+        // Inicializa objeto llmChat si no existe (manteniendo tu contrato)
+        if (!messaging.llmChat) {
+            messaging.llmChat = { isInitThreadHandled: false };
+        }
+        const llmChat = messaging.llmChat;
+
+        // Abre la vista LLM si tu servicio lo provee
+        if (!llmChat.llmChatView && typeof messaging.openLLMChat === "function") {
+            messaging.openLLMChat();
+        }
+
+        // Si ya está activo, desactiva
+        if (this.state.is_chatting_with_llm) {
+            this.state.is_chatting_with_llm = false;
+            this.llmChatThread = null;
+            this.llmChatThreadView = null;
+            return;
         }
 
         try {
-          const thread = await llmChat.ensureThread({
-            relatedThreadModel: this.thread.model,
-            relatedThreadId: this.thread.id,
-          });
-          if (!thread) {
-            throw new Error("Failed to ensure thread");
-          }
+            // Equivalente a ensureThread({ relatedThreadModel, relatedThreadId })
+            let ensuredThread = null;
+            if (typeof messaging.ensureLLMThread === "function") {
+                ensuredThread = await messaging.ensureLLMThread({
+                    relatedThreadModel: thread.model,
+                    relatedThreadId: thread.id,
+                });
+            } else {
+                // Fallback: reutiliza el mismo thread si no tienes servicio aún
+                ensuredThread = thread;
+            }
 
-          await llmChat.selectThread(thread.id);
-          this.update({ is_chatting_with_llm: true });
+            if (!ensuredThread) {
+                throw new Error("Failed to ensure thread");
+            }
+
+            // Equivalente a selectThread(thread.id)
+            if (typeof messaging.selectLLMThread === "function") {
+                await messaging.selectLLMThread(ensuredThread.id);
+            }
+
+            // Expone los nombres que tu XML espera
+            this.llmChatThread = ensuredThread;
+            this.llmChatThreadView = {
+                threadViewer: llmChat?.llmChatView?.threadViewer || null,
+                messageListView: {},
+                llmChatThreadHeaderView: {},
+            };
+            this.state.is_chatting_with_llm = true;
         } catch (error) {
-          this.env.services.notification.add(
-            error.message || "An error occurred",
-            { type: "danger", title: "Failed to Start AI Chat" }
-          );
+            this.env.services.notification.add(
+                error?.message || "An error occurred",
+                { type: "danger", title: "Failed to Start AI Chat" }
+            );
         }
-      }
     },
-  },
+
+    // -------- Interceptores opcionales para "salir" del modo LLM al usar acciones nativas --------
+
+    toggleComposer(type) {
+        if (this.state.is_chatting_with_llm) {
+            this.toggleLLMChat();
+        }
+        return this._super(type);
+    },
+
+    scheduleActivity() {
+        if (this.state.is_chatting_with_llm) {
+            this.toggleLLMChat();
+        }
+        return this._super();
+    },
+
+    onClickAddAttachments(ev) {
+        if (this.state.is_chatting_with_llm) {
+            this.toggleLLMChat();
+        }
+        return this._super(ev);
+    },
+
+    onClickAttachFile(ev) {
+        if (this.state.is_chatting_with_llm) {
+            this.toggleLLMChat();
+        }
+        return this._super(ev);
+    },
 });
