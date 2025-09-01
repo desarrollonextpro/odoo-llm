@@ -1,25 +1,34 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t
-    t-name="llm_thread.ChatterTopbar"
-    t-inherit="mail.ChatterTopbar"
-    t-inherit-mode="extension"
-    owl="1"
-  >
-        <!-- Insert AI button after the Schedule Activity button -->
-        <xpath
-      expr="//button[hasclass('o_ChatterTopbar_buttonScheduleActivity')]"
-      position="after"
-    >
-            <!-- AI Chat Button inserted next to Activities -->
-            <div class="o_ChatterTopbar_borderLeft ms-2" />
-            <button
-        t-attf-class="o_ChatterTopbar_button btn text-nowrap ms-2 {{ chatterTopbar.chatter.is_chatting_with_llm ? 'btn-primary o-active' : 'btn-light' }}"
-        type="button"
-        t-on-click="chatterTopbar.chatter.toggleLLMChat"
-      >
-                <span>AI</span>
-            </button>
-        </xpath>
-    </t>
+  <!-- Extiende el topbar del Chatter en v17 -->
+  <t t-name="llm_thread.Chatter"
+     t-inherit="mail.Chatter"
+     t-inherit-mode="extension"
+     owl="1">
+
+    <!-- Caso 1: insertar DESPUÉS del botón Activities -->
+    <xpath expr="//div[contains(@class,'o-mail-Chatter-topbar')]//button[hasclass('o-mail-Chatter-activity')]" position="after">
+      <!-- separador visual opcional -->
+      <span class="ms-2" style="border-left: 1px solid var(--border); height: auto;"></span>
+      <button
+        class="o-mail-Chatter-llm btn text-nowrap ms-2"
+        t-att-class="(state.isChattingWithLLM ? 'btn-primary active' : 'btn-secondary') + (props.compactHeight ? '' : ' my-2')"
+        t-att-disabled="!props.threadId"
+        t-on-click="toggleLLMChat">
+        <span>AI</span>
+      </button>
+    </xpath>
+
+    <!-- Caso 2: si no hay Activities, insertar ANTES del spacer para que igual aparezca -->
+    <xpath expr="//div[contains(@class,'o-mail-Chatter-topbar')]//span[hasclass('o-mail-Chatter-topbarGrow')]" position="before">
+      <button
+        class="o-mail-Chatter-llm btn text-nowrap me-2"
+        t-att-class="(state.isChattingWithLLM ? 'btn-primary active' : 'btn-secondary') + (props.compactHeight ? '' : ' my-2')"
+        t-att-disabled="!props.threadId"
+        t-on-click="toggleLLMChat">
+        <span>AI</span>
+      </button>
+    </xpath>
+
+  </t>
 </templates>
