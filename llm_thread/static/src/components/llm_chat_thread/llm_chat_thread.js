@@ -1,35 +1,24 @@
 /** @odoo-module **/
 
-import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { Component } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 export class LLMChatThread extends Component {
-  get threadView() {
-    return this.props.threadView;
+  static template = "llm_thread.LLMChatThread";
+  static props = {
+    thread: { type: Object, optional: true },
+    isStreaming: { type: Boolean, optional: true },
+  };
+
+  setup() {
+    this.llmChatService = useService("llm_chat");
   }
 
-  /**
-   * @returns {Thread}
-   */
   get thread() {
-    return this.props.record;
+    return this.props.thread || this.llmChatService.state.activeThread;
   }
 
-  /**
-   * @returns {Message[]}
-   */
-  get messages() {
-    // Use ThreadCache's orderedMessages
-    return this.thread.cache?.orderedMessages || [];
+  get isStreaming() {
+    return this.props.isStreaming || this.llmChatService.state.isStreaming;
   }
 }
-
-Object.assign(LLMChatThread, {
-  props: {
-    record: Object,
-    threadView: Object,
-  },
-  template: "llm_thread.LLMChatThread",
-});
-
-registerMessagingComponent(LLMChatThread);

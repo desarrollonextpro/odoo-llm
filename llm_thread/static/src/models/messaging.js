@@ -1,14 +1,4 @@
 /** @odoo-module **/
 
-import { one } from "@mail/model/model_field";
-import { registerPatch } from "@mail/model/model_core";
-
-registerPatch({
-  name: "Messaging",
-  fields: {
-    llmChat: one("LLMChat", {
-      default: {},
-      isCausal: true,
-    }),
-  },
-});
+// This file is now empty as we don't need to patch the messaging service in v17
+// The LLM chat service is directly accessible via services

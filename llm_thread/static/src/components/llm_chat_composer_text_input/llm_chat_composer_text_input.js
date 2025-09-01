@@ -1,43 +1,52 @@
 /** @odoo-module **/
-import { ComposerTextInput } from "@mail/components/composer_text_input/composer_text_input";
-import { registerMessagingComponent } from "@mail/utils/messaging_component";
 
-export class LLMChatComposerTextInput extends ComposerTextInput {
-  /**
-   * @override
-   */
+import { Component, useRef, onMounted } from "@odoo/owl";
+
+export class LLMChatComposerTextInput extends Component {
   setup() {
     super.setup();
-    this._composerView();
-  }
-  /**
-   * Intercept input event before passing to composer view
-   * @private
-   * @param {InputEvent} ev
-   */
-  _onInput(ev) {
-    // Call original handler
-    this._composerView();
-    this.composerView.onInputTextarea(ev);
-  }
-
-  _composerView() {
-    return this.props.record;
+    this.textareaRef = useRef("textarea");
+    
+    onMounted(() => {
+      if (this.textareaRef.el) {
+        this.textareaRef.el.focus();
+      }
+    });
   }
 
   /**
-   * Intercept keydown event
-   * @private
-   * @param {KeyboardEvent} ev
+   * Handle input events
    */
-  _onKeydown(ev) {
-    this.composerView.onKeydownTextareaForLLM(ev);
+  onInput(event) {
+    if (this.props.onInput) {
+      this.props.onInput(event);
+    }
+  }
+
+  /**
+   * Handle keydown events
+   */
+  onKeydown(event) {
+    if (this.props.onKeydown) {
+      this.props.onKeydown(event);
+    }
+  }
+
+  /**
+   * Get placeholder text
+   */
+  get placeholder() {
+    return this.props.placeholder || "Ask anything...";
   }
 }
 
 Object.assign(LLMChatComposerTextInput, {
-  props: { record: Object },
+  props: {
+    value: { type: String, optional: true },
+    placeholder: { type: String, optional: true },
+    disabled: { type: Boolean, optional: true },
+    onInput: { type: Function, optional: true },
+    onKeydown: { type: Function, optional: true },
+  },
   template: "llm_thread.LLMChatComposerTextInput",
 });
-
-registerMessagingComponent(LLMChatComposerTextInput);

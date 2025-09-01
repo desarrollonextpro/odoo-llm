@@ -1,45 +1,45 @@
 /** @odoo-module **/
 
-import { registerMessagingComponent } from "@mail/utils/messaging_component";
-import { useModels } from "@mail/component_hooks/use_models";
 import { Component, useState } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 export class LLMChatThreadList extends Component {
+  static template = "llm_thread.LLMChatThreadList";
+  static props = {
+    threads: { type: Array, optional: true },
+    activeThread: { type: Object, optional: true },
+    onThreadClick: { type: Function, optional: true },
+  };
+
   setup() {
-    useModels();
-    super.setup();
+    this.llmChatService = useService("llm_chat");
     this.state = useState({
       isLoading: false,
     });
   }
 
-  /**
-   * @returns {LLMChatView}
-   */
-  get llmChatView() {
-    return this.props.record;
+  get threads() {
+    return this.props.threads || this.llmChatService.state.threads;
   }
 
-  /**
-   * @returns {Thread}
-   */
   get activeThread() {
-    return this.llmChatView.llmChat.activeThread;
+    return this.props.activeThread || this.llmChatService.state.activeThread;
   }
 
   /**
    * Handle thread click
-   * @param {Thread} thread
+   * @param {Object} thread
    */
   async _onThreadClick(thread) {
     if (this.state.isLoading) return;
 
     this.state.isLoading = true;
     try {
-      await this.llmChatView.llmChat.selectThread(thread.id);
-      this.llmChatView.update({
-        isThreadListVisible: false,
-      });
+      if (this.props.onThreadClick) {
+        await this.props.onThreadClick(thread);
+      } else {
+        await this.llmChatService.selectThread(thread.id);
+      }
     } catch (error) {
       console.error("Error selecting thread:", error);
       this.env.services.notification.add(
@@ -51,10 +51,3 @@ export class LLMChatThreadList extends Component {
     }
   }
 }
-
-Object.assign(LLMChatThreadList, {
-  props: { record: Object },
-  template: "llm_thread.LLMChatThreadList",
-});
-
-registerMessagingComponent(LLMChatThreadList);

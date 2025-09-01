@@ -1,48 +1,27 @@
 /** @odoo-module **/
 
-import { attr, one } from "@mail/model/model_field";
-import { registerPatch } from "@mail/model/model_core";
+// Thread extensions for LLM Assistant in v17
+// Since v17 has a different architecture, we keep this minimal
 
 /**
- * Patch the Thread model to add llmAssistant field
+ * Utility functions for thread-assistant relationships
  */
-registerPatch({
-  name: "Thread",
-  fields: {
-    /**
-     * The LLM assistant associated with this thread
-     */
-    llmAssistant: one("LLMAssistant", {
-      inverse: "threads",
-    }),
-    /**
-     * The prompt ID associated with this thread (legacy support)
-     */
-    promptId: attr(),
-  },
-  recordMethods: {
-    /**
-     * Override updateLLMChatThreadSettings to handle assistant
-     * @override
-     * @param {Object} settings - Settings object
-     * @param {Number|false} [settings.assistantId] - Assistant ID to set, or false to clear
-     */
-    async updateLLMChatThreadSettings(settings = {}) {
-      const { assistantId, ...otherSettings } = settings;
-
-      // Prepare additional values for the assistant_id field
-      const additionalValues = {};
-
-      // Handle assistant_id if provided
-      if (assistantId !== undefined) {
-        additionalValues.assistant_id = assistantId || false;
-      }
-
-      // Call super with our additional values
-      return this._super({
-        ...otherSettings,
-        additionalValues,
-      });
-    },
-  },
-});
+export class ThreadAssistantUtils {
+  
+  /**
+   * Update thread settings with assistant information
+   * @param {Object} orm - ORM service
+   * @param {Number} threadId - Thread ID
+   * @param {Object} settings - Settings to update
+   */
+  static async updateLLMChatThreadSettings(orm, threadId, settings = {}) {
+    const { assistantId, ...otherSettings } = settings;
+    const updateData = { ...otherSettings };
+    
+    if (assistantId !== undefined) {
+      updateData.assistant_id = assistantId || false;
+    }
+    
+    return await orm.write("llm.thread", [threadId], updateData);
+  }
+}

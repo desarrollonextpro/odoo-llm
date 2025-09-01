@@ -1,23 +1,48 @@
 /** @odoo-module **/
 
-import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { Component } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
+
 export class LLMChat extends Component {
-  // --------------------------------------------------------------------------
-  // Public
-  // --------------------------------------------------------------------------
+  static template = "llm_thread.LLMChat";
+
+  setup() {
+    this.llmChatService = useService("llm_chat");
+  }
 
   /**
-   * @returns {LLMChatView}
+   * Get the LLM chat service state
    */
-  get llmChatView() {
-    return this.props.record;
+  get llmChatState() {
+    return this.llmChatService.state;
+  }
+
+  /**
+   * Check if chat is active and has threads
+   */
+  get isActive() {
+    return this.llmChatState.isActive;
+  }
+
+  /**
+   * Get active thread
+   */
+  get activeThread() {
+    return this.llmChatState.activeThread;
+  }
+
+  /**
+   * Get threads list
+   */
+  get threads() {
+    return this.llmChatState.threads;
+  }
+
+  /**
+   * Check if thread list is visible
+   */
+  get isThreadListVisible() {
+    return this.llmChatState.isThreadListVisible;
   }
 }
 
-Object.assign(LLMChat, {
-  props: { record: Object },
-  template: "llm_thread.LLMChat",
-});
-
-registerMessagingComponent(LLMChat);

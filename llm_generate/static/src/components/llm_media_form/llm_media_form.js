@@ -3,7 +3,7 @@
 import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { JsonEditorComponent } from "@web_json_editor/components/json_editor/json_editor";
 import { LLMFormFieldsView } from "./llm_form_fields_view";
-const { Component, useState, onWillStart, useEffect, useRef } = owl;
+import { Component, useState, onWillStart, useEffect, useRef } from "@odoo/owl";
 
 export class LLMMediaForm extends Component {
   setup() {

@@ -86,12 +86,12 @@
                 name="prompt_id"
                 options="{'no_create': False, 'no_open': False}"
               />
-                            <field name="category_id" readonly="1" />
-                            <field
+                            <!--<field name="category_id" readonly="1" />-->
+                            <!--<field
                 name="tag_ids"
                 widget="many2many_tags"
                 readonly="1"
-              />
+              />-->
                         </group>
                         <group name="access_control">
                             <field name="is_public" />

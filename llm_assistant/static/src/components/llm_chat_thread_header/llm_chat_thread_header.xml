@@ -21,7 +21,7 @@
                     <div class="text-truncate">
                         <t t-if="llmChatThreadHeaderView.selectedAssistant">
                             <t
-                t-esc="llmChatThreadHeaderView.selectedAssistant.name"
+                t-esc="llmChatThreadHeaderView.selectedAssistant?.name or 'Unknown Assistant'"
               />
                         </t>
                         <t t-else="">
@@ -51,10 +51,10 @@
                 class="dropdown-item text-truncate"
                 href="#"
                 t-on-click="() => this.onSelectAssistant(assistant)"
-                t-att-title="assistant.name"
+                t-att-title="assistant?.name or 'Unknown Assistant'"
                 t-attf-class="{{ llmChatThreadHeaderView.selectedAssistant and llmChatThreadHeaderView.selectedAssistant.id === assistant.id ? 'active' : '' }}"
               >
-                                <t t-esc="assistant.name" />
+                                <t t-esc="assistant?.name or 'Unknown Assistant'" />
                             </a>
                         </li>
                     </t>

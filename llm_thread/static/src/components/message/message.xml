@@ -6,7 +6,7 @@
     <t t-if="!state.isEditing">
       <div class="o-mail-Message-prettyBody o_Message_prettyBody" t-ref="prettyBody"/>
     </t>
-    <t t-if="message.toolCalls && message.toolCalls.length">
+    <t t-if="message.toolCalls and message.toolCalls.length">
       <div class="o_llm_tool_calls mt-2 small text-muted border-top pt-1">
         <strong class="me-1">Tools Requested:</strong>
         <t t-foreach="message.toolCalls" t-as="toolCall" t-key="toolCall.id">
@@ -79,7 +79,7 @@
            t-att-class="{
              'p-1': message.is_note,
              'mb-0 py-2 px-3': !message.is_note,
-             'align-self-start rounded-end-3 rounded-bottom-3': !state.isEditing && !message.is_note,
+             'align-self-start rounded-end-3 rounded-bottom-3': !state.isEditing and !message.is_note,
              'o-mail-Message-editable flex-grow-1': state.isEditing,
            }"
            t-ref="body">
@@ -107,7 +107,7 @@
             <t t-call="llm_thread.Message.ToolResultContent"/>
           </t>
           <t t-else="">
-            <div class="overflow-x-auto" t-if="message.type && message.type.includes('email')" t-ref="shadowBody"/>
+            <div class="overflow-x-auto" t-if="message.type and message.type.includes('email')" t-ref="shadowBody"/>
             <t t-elif="state.showTranslation" t-out="message.translationValue"/>
             <t t-elif="message.body" t-out="props.messageSearch?.highlight(message.body) ?? message.body"/>
             <p class="fst-italic text-muted small" t-if="state.showTranslation">

@@ -1,28 +1,25 @@
 /** @odoo-module **/
 
-import { registerMessagingComponent } from "@mail/utils/messaging_component";
-import { useModels } from "@mail/component_hooks/use_models";
 import { Component } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 export class LLMChatSidebar extends Component {
-  setup() {
-    useModels();
-    super.setup();
-  }
+  static template = "llm_thread.LLMChatSidebar";
+  static props = {
+    isThreadListVisible: { type: Boolean },
+    onToggleThreadList: { type: Function, optional: true },
+  };
 
-  /**
-   * @returns {LLMChatView}
-   */
-  get llmChatView() {
-    return this.props.record;
+  setup() {
+    this.llmChatService = useService("llm_chat");
   }
 
   /**
    * Handle backdrop click to close sidebar on mobile
    */
   _onBackdropClick() {
-    if (this.messaging.device.isSmall) {
-      this.llmChatView.update({ isThreadListVisible: false });
+    if (this.props.onToggleThreadList) {
+      this.props.onToggleThreadList(false);
     }
   }
 
@@ -30,15 +27,14 @@ export class LLMChatSidebar extends Component {
    * Handle click on New Chat button
    */
   async _onClickNewChat() {
-    const llmChat = this.llmChatView.llmChat;
-    await llmChat.createNewThread();
-    this.llmChatView.update({ isThreadListVisible: false });
+    try {
+      const name = `New Chat ${new Date().toLocaleString()}`;
+      await this.llmChatService.createThread({ name });
+      if (this.props.onToggleThreadList) {
+        this.props.onToggleThreadList(false);
+      }
+    } catch (error) {
+      console.error("Failed to create new chat:", error);
+    }
   }
 }
-
-Object.assign(LLMChatSidebar, {
-  props: { record: Object },
-  template: "llm_thread.LLMChatSidebar",
-});
-
-registerMessagingComponent(LLMChatSidebar);

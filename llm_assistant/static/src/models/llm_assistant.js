@@ -1,35 +1,40 @@
 /** @odoo-module **/
 
-import { attr, many, one } from "@mail/model/model_field";
-import { registerModel } from "@mail/model/model_core";
-
 /**
- * Model for LLM Assistant
+ * Simple LLM Assistant model for v17
+ * Since v17 doesn't use the old Record system with attr/many/one,
+ * we use plain JavaScript objects managed by services
  */
-registerModel({
-  name: "LLMAssistant",
-  fields: {
-    id: attr({
-      identifying: true,
-    }),
-    name: attr(),
-    /**
-     * Threads associated with this assistant
-     */
-    threads: many("Thread", {
-      inverse: "llmAssistant",
-    }),
-    /**
-     * The prompt associated with this assistant
-     */
-    llmPrompt: one("LLMPrompt", {
-      inverse: "assistants",
-    }),
-    /**
-     * Prompt ID (used for loading from server)
-     */
-    promptId: attr(),
-    defaultValues: attr(),
-    evaluatedDefaultValues: attr(),
-  },
-});
+export class LLMAssistant {
+  constructor(data = {}) {
+    this.id = data.id;
+    this.name = data.name;
+    this.promptId = data.promptId;
+    this.defaultValues = data.defaultValues;
+    this.evaluatedDefaultValues = data.evaluatedDefaultValues;
+    // Relations handled by IDs rather than Record relationships
+    this.threadIds = data.threadIds || [];
+    this.llmPromptId = data.llmPromptId;
+    this.llmPrompt = data.llmPrompt || null; // Add this property
+  }
+
+  /**
+   * Update assistant properties
+   */
+  update(data) {
+    Object.assign(this, data);
+  }
+
+  /**
+   * Create assistant from server data
+   */
+  static fromServerData(data) {
+    return new LLMAssistant({
+      id: data.id,
+      name: data.name,
+      promptId: data.prompt_id?.[0] || null,
+      defaultValues: data.default_values,
+      evaluatedDefaultValues: data.evaluated_default_values,
+    });
+  }
+}

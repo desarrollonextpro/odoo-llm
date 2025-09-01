@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
-import { attr } from "@mail/model/model_field";
-import { registerPatch } from "@mail/model/model_core";
+import { patch } from "@web/core/utils/patch";
+import { Message } from "@mail/core/common/message_model";
 
 /**
  * Helper function to safely parse JSON strings.
@@ -21,149 +21,119 @@ function safeJsonParse(jsonString, defaultValue = undefined) {
   }
 }
 
-registerPatch({
-  name: "Message",
-  modelMethods: {
+// Patch Message model for LLM-specific fields
+patch(Message.prototype, {
     /**
      * @override
      */
-    convertData(data) {
-      const data2 = this._super(data);
-      if ("user_vote" in data) {
-        data2.user_vote = data.user_vote;
-      }
-      // Add LLM role data from the stored field
-      if ("llm_role" in data) {
-        data2.llmRole = data.llm_role;
-      }
-      // Add body_json data for tool messages
-      if ("body_json" in data) {
-        data2.bodyJson = data.body_json;
-      }
-      return data2;
+    setup() {
+        super.setup();
+        
+        // Initialize LLM-specific fields
+        this.user_vote = this.user_vote || 0;
+        this.llmRole = this.llmRole || null;
+        this.bodyJson = this.bodyJson || null;
     },
-    
-  },
-  fields: {
-    // So that assisstant messages with tool_calls but no body does not missed from ui rendering
-    isEmpty: {
-      compute(){
-        return this._super() && !this.bodyJson;
-      }
-    },
-    user_vote: attr({
-      default: 0,
-    }),
 
     /**
-     * LLM role for this message ('user', 'assistant', 'tool', 'system')
-     * This comes directly from the backend stored field
+     * Check if message is empty (override for LLM messages)
      */
-    llmRole: attr({
-      default: null,
-    }),
-
-    /**
-     * JSON body data for tool messages
-     */
-    bodyJson: attr({
-      default: null,
-    }),
+    get isEmpty() {
+        return super.isEmpty && !this.bodyJson;
+    },
 
     /**
      * Get tool data from body_json field for tool/assistant messages
      */
-    toolData: attr({
-      compute() {
+    get toolData() {
         return ['tool', 'assistant'].includes(this.llmRole) && this.bodyJson ? this.bodyJson : null;
-      },
-    }),
+    },
 
     /**
      * Get tool call ID from tool data
      */
-    toolCallId: attr({
-      compute() {
-        const toolData = this.toolData;
-        return toolData?.tool_call_id || null;
-      },
-    }),
+    get toolCallId() {
+        return this.toolData?.tool_call_id || null;
+    },
 
     /**
      * Get tool call definition from tool data
      */
-    toolCallDefinitionFormatted: attr({
-      compute() {
-        const toolData = this.toolData;
-        return toolData?.tool_call || null;
-      },
-    }),
+    get toolCallDefinitionFormatted() {
+        return this.toolData?.tool_call || null;
+    },
 
     /**
      * Get tool call result from tool data
      */
-    toolCallResultData: attr({
-      compute() {
+    get toolCallResultData() {
         const toolData = this.toolData;
         if (toolData) {
-          if ("result" in toolData) {
-            return toolData.result;
-          } else if ("error" in toolData) {
-            return { error: toolData.error };
-          }
+            if ("result" in toolData) {
+                return toolData.result;
+            } else if ("error" in toolData) {
+                return { error: toolData.error };
+            }
         }
         return null;
-      },
-    }),
+    },
 
     /**
      * Check if tool call result is an error
      */
-    toolCallResultIsError: attr({
-      compute() {
-        const toolData = this.toolData;
-        return toolData && toolData.status === "error";
-      },
-    }),
+    get toolCallResultIsError() {
+        return this.toolData && this.toolData.status === "error";
+    },
 
     /**
      * Format tool call result for display
      */
-    toolCallResultFormatted: attr({
-      compute() {
+    get toolCallResultFormatted() {
         const resultData = this.toolCallResultData;
         if (resultData === undefined || resultData === null) {
-          return "";
+            return "";
         }
         try {
-          return typeof resultData === "object"
-            ? JSON.stringify(resultData, null, 2)
-            : String(resultData);
+            return typeof resultData === "object"
+                ? JSON.stringify(resultData, null, 2)
+                : String(resultData);
         } catch (e) {
-          console.error("Error formatting tool call result:", e);
-          return String(resultData);
+            console.error("Error formatting tool call result:", e);
+            return String(resultData);
         }
-      },
-    }),
+    },
 
     /**
      * Get tool name from tool data
      */
-    toolName: attr({
-      compute() {
-        const toolData = this.toolData;
-        return toolData?.tool_name || null;
-      },
-    }),
+    get toolName() {
+        return this.toolData?.tool_name || null;
+    },
 
     /**
-     * Tool calls associated with bodyJson(normally assistant message may have it)
+     * Tool calls associated with bodyJson
      */
-    toolCalls: attr({
-      compute() {
-        const toolData = this.toolData;
-        return toolData?.tool_calls || [];
-      },
-    }),
-  },
+    get toolCalls() {
+        return this.toolData?.tool_calls || [];
+    },
+});
+
+// Patch Message model methods
+patch(Message, {
+    /**
+     * @override
+     */
+    convertData(data) {
+        const data2 = super.convertData(data);
+        if ("user_vote" in data) {
+            data2.user_vote = data.user_vote;
+        }
+        if ("llm_role" in data) {
+            data2.llmRole = data.llm_role;
+        }
+        if ("body_json" in data) {
+            data2.bodyJson = data.body_json;
+        }
+        return data2;
+    },
 });

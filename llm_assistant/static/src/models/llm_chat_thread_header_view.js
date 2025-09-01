@@ -1,136 +1,66 @@
 /** @odoo-module **/
 
-import { attr, one } from "@mail/model/model_field";
-import { clear } from "@mail/model/model_field_command";
-import { registerPatch } from "@mail/model/model_core";
+/**
+ * Thread Header Assistant Manager for v17
+ * Manages assistant selection in thread headers without the old Record system
+ */
+export class ThreadHeaderAssistantManager {
+  constructor() {
+    this.selectedAssistantId = null;
+  }
 
-registerPatch({
-  name: "LLMChatThreadHeaderView",
-  fields: {
-    /**
-     * Selected assistant ID
-     */
-    selectedAssistantId: attr(),
+  /**
+   * Initialize state based on current thread
+   */
+  initializeState(thread, assistants = []) {
+    if (!thread) {
+      this.selectedAssistantId = null;
+      return;
+    }
 
-    /**
-     * Selected assistant record
-     */
-    selectedAssistant: one("LLMAssistant", {
-      compute() {
-        if (!this.selectedAssistantId) {
-          return clear();
-        }
-        // This now searches within a collection of LLMAssistant records
-        // and returns a record instance, which is correct.
-        const assistants = this.threadView?.thread?.llmChat?.llmAssistants;
-        if (!assistants || !Array.isArray(assistants)) {
-          return clear();
-        }
-        return (
-          assistants.find(
-            (assistantRecord) =>
-              assistantRecord && assistantRecord.id === this.selectedAssistantId
-          ) || clear()
-        );
-      },
-    }),
-  },
-  recordMethods: {
-    /**
-     * Initialize or reset state based on current thread
-     * @override
-     * @private
-     */
-    _initializeState() {
-      this._super();
-      const currentThread = this.threadView?.thread;
-      if (!currentThread) {
-        this.update({
-          selectedAssistantId: clear(),
-        });
-        return;
-      }
+    // Look for assistant association in thread data
+    this.selectedAssistantId = thread.assistant_id || thread.llmAssistant?.id || null;
+  }
 
-      this.update({
-        selectedAssistantId: currentThread.llmAssistant?.id || clear(),
-      });
-    },
+  /**
+   * Get selected assistant from available assistants
+   */
+  getSelectedAssistant(assistants = []) {
+    if (!this.selectedAssistantId || !Array.isArray(assistants)) {
+      return null;
+    }
+    return assistants.find(assistant => assistant && assistant.id === this.selectedAssistantId) || null;
+  }
 
-    /**
-     * Save selected assistant to the thread using the dedicated endpoint
-     * @param {Number|false} assistantId - ID of the selected assistant or false to clear
-     */
-    async saveSelectedAssistant(assistantId) {
-      if (assistantId === this.selectedAssistantId) {
-        return;
-      }
+  /**
+   * Save selected assistant to thread
+   */
+  async saveSelectedAssistant(orm, threadId, assistantId) {
+    if (assistantId === this.selectedAssistantId) {
+      return { success: true };
+    }
 
-      // Update the local state immediately for responsive UI
-      this.update({
-        selectedAssistantId: assistantId || clear(),
-      });
+    try {
+      // Update local state immediately
+      this.selectedAssistantId = assistantId || null;
 
-      const thread = this.threadView.thread;
-      const result = await this.messaging.rpc({
-        route: "/llm/thread/set_assistant",
-        params: {
-          thread_id: thread.id,
+      // Update on server
+      const result = await orm.call(
+        "llm.thread", 
+        "set_assistant",
+        [],
+        {
+          thread_id: threadId,
           assistant_id: assistantId,
-        },
-      });
-
-      if (result.success) {
-        // Find the assistant in the list
-        const assistants = this.threadView?.thread?.llmChat?.llmAssistants;
-
-        if (assistants && assistantId) {
-          const assistant = assistants.find((a) => a.id === assistantId);
-
-          if (assistant) {
-            if (result.evaluated_default_values) {
-              // Update the individual assistant properties with new values
-              assistant.update({
-                defaultValues: result.default_values,
-                evaluatedDefaultValues: result.evaluated_default_values,
-              });
-            } else {
-              // Clean up default values when there are no evaluated default values
-              assistant.update({
-                defaultValues: clear(),
-                evaluatedDefaultValues: clear(),
-              });
-            }
-          }
         }
+      );
 
-        // Refresh the thread to get updated data
-        await this.threadView.thread.llmChat.refreshThread(
-          this.threadView.thread.id
-        );
-        if (assistantId === false) {
-          this.update({
-            selectedAssistantId: clear(),
-          });
-        } else {
-          this.update({
-            selectedModelId: this.threadView.thread.llmModel?.id,
-            selectedProviderId:
-              this.threadView.thread.llmModel?.llmProvider?.id,
-          });
-        }
-      } else {
-        // Revert the local state if the server call failed
-        this.update({
-          selectedAssistantId:
-            this.threadView.thread.llmAssistant?.id || clear(),
-        });
-
-        // Show error message
-        this.messaging.notify({
-          type: "warning",
-          message: "Failed to update assistant",
-        });
-      }
-    },
-  },
-});
+      return result.success ? result : { success: false, error: "Failed to update assistant" };
+    } catch (error) {
+      console.error("Error saving selected assistant:", error);
+      // Revert local state on error
+      this.selectedAssistantId = this.selectedAssistantId === assistantId ? null : this.selectedAssistantId;
+      return { success: false, error: error.message };
+    }
+  }
+}

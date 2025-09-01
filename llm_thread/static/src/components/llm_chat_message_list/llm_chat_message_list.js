@@ -1,61 +1,85 @@
 /** @odoo-module **/
 
-import { useEffect, useRef } from "@odoo/owl";
-import { MessageList } from "@mail/components/message_list/message_list";
+import { Component, useEffect, useRef, useState, onMounted } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 import { Transition } from "@web/core/transition";
-import { registerMessagingComponent } from "@mail/utils/messaging_component";
 
-export class LLMChatMessageList extends MessageList {
+export class LLMChatMessageList extends Component {
+  static template = "llm_thread.LLMChatMessageList";
+  static components = { Transition };
+  static props = {
+    thread: { type: Object, optional: true },
+    isStreaming: { type: Boolean, optional: true },
+  };
+
   setup() {
-    super.setup();
+    this.orm = useService("orm");
     this.rootRef = useRef("root");
-    // TODO check if we can do this also when chunks updates
+    this.state = useState({
+      messages: [],
+      isLoading: false,
+    });
+
+    // Load messages when thread changes
     useEffect(
       () => {
-        if (this.thread) {
+        if (this.props.thread) {
+          this._loadMessages();
+        }
+      },
+      () => [this.props.thread?.id]
+    );
+
+    // Auto-scroll when messages or streaming changes
+    useEffect(
+      () => {
+        if (this.props.thread) {
           this._scrollToEnd();
         }
       },
-      () => [this.thread, this.isStreaming]
+      () => [this.state.messages.length, this.props.isStreaming]
     );
+
+    // Listen for real-time message updates
+    onMounted(() => {
+      this.env.bus.addEventListener("llm-message-update", this._onMessageUpdate.bind(this));
+    });
   }
 
-  get thread() {
-    return this.composerView.composer.thread;
+  async _loadMessages() {
+    if (!this.props.thread?.id) return;
+
+    this.state.isLoading = true;
+    try {
+      const messages = await this.orm.searchRead(
+        "mail.message",
+        [["res_id", "=", this.props.thread.id], ["model", "=", "llm.thread"]],
+        ["id", "body", "author_id", "create_date", "message_type"],
+        { order: "create_date ASC" }
+      );
+      this.state.messages = messages;
+    } catch (error) {
+      console.error("Error loading messages:", error);
+    } finally {
+      this.state.isLoading = false;
+    }
   }
 
-  get composerView() {
-    return this.props.composerView;
-  }
-
-  get isStreaming() {
-    return this.composerView.composer.isStreaming;
+  _onMessageUpdate(event) {
+    if (event.detail?.threadId === this.props.thread?.id) {
+      // Reload messages to get the latest
+      this._loadMessages();
+    }
   }
 
   _scrollToEnd() {
+    if (!this.rootRef.el) return;
+    
     const scrollable = this.rootRef.el.closest(".o_LLMChatThread_content");
     if (scrollable) {
-      const scrollHeight = scrollable.scrollHeight;
-      const clientHeight = scrollable.clientHeight;
-      const scrollTop = scrollHeight - clientHeight;
-      scrollable.scrollTop = scrollTop;
+      scrollable.scrollTop = scrollable.scrollHeight;
     } else {
-      // Fallback to original behavior
-      const fallbackScrollable = this.rootRef.el;
-      if (fallbackScrollable) {
-        const scrollHeight = fallbackScrollable.scrollHeight;
-        const clientHeight = fallbackScrollable.clientHeight;
-        const scrollTop = scrollHeight - clientHeight;
-        fallbackScrollable.scrollTop = scrollTop;
-      }
+      this.rootRef.el.scrollTop = this.rootRef.el.scrollHeight;
     }
   }
 }
-
-Object.assign(LLMChatMessageList, {
-  components: { Transition },
-  props: { record: Object, composerView: Object },
-  template: "llm_thread.LLMChatMessageList",
-});
-
-registerMessagingComponent(LLMChatMessageList);

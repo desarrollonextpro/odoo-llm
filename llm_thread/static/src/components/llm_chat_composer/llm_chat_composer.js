@@ -1,66 +1,70 @@
 /** @odoo-module **/
 
-import { registerMessagingComponent } from "@mail/utils/messaging_component";
-import { useComponentToModel } from "@mail/component_hooks/use_component_to_model";
-import { Component } from "@odoo/owl";
+import { Component, useState } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 export class LLMChatComposer extends Component {
-  /**
-   * @override
-   */
   setup() {
     super.setup();
-    useComponentToModel({ fieldName: "component" });
+    this.llmChatService = useService("llm_chat");
+    this.state = useState({
+      messageInput: "",
+    });
   }
 
   /**
-   * @returns {ComposerView}
-   */
-  get composerView() {
-    return this.props.record;
-  }
-
-  /**
-   * @returns {Boolean}
+   * Check if send is disabled
    */
   get isDisabled() {
-    // Read the computed disabled state from the model.
-    return this.composerView.composer.isSendDisabled;
+    return !this.state.messageInput.trim() || !this.llmChatService.state.activeThread;
   }
-
-  get isStreaming() {
-    return this.composerView.composer.isStreaming;
-  }
-
-  // --------------------------------------------------------------------------
-  // Private
-  // --------------------------------------------------------------------------
 
   /**
-   * Intercept send button click
-   * @private
+   * Check if currently streaming
    */
-  _onClickSend() {
+  get isStreaming() {
+    return this.llmChatService.state.isStreaming;
+  }
+
+  /**
+   * Handle input change
+   */
+  onInputChange(event) {
+    this.state.messageInput = event.target.value;
+  }
+
+  /**
+   * Handle send button click
+   */
+  async onClickSend() {
     if (this.isDisabled) {
       return;
     }
 
-    this.composerView.composer.postUserMessageForLLM();
+    const message = this.state.messageInput.trim();
+    this.state.messageInput = ""; // Clear input
+    await this.llmChatService.sendMessage(message);
   }
 
   /**
-   * Handles click on the stop button.
-   *
-   * @private
+   * Handle stop button click
    */
-  _onClickStop() {
-    this.composerView.composer.stopLLMThreadLoop();
+  onClickStop() {
+    this.llmChatService.stopStreaming();
+  }
+
+  /**
+   * Handle keydown events (e.g., Enter to send)
+   */
+  onKeydown(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      this.onClickSend();
+    }
   }
 }
 
 Object.assign(LLMChatComposer, {
-  props: { record: Object },
+  props: {},
   template: "llm_thread.LLMChatComposer",
 });
-
-registerMessagingComponent(LLMChatComposer);

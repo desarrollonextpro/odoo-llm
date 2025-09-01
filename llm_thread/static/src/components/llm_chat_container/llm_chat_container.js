@@ -1,62 +1,49 @@
 /** @odoo-module **/
 
-import { getMessagingComponent } from "@mail/utils/messaging_component";
-import { useModels } from "@mail/component_hooks/use_models";
-import { Component, onWillDestroy } from "@odoo/owl";
+import { LLMChat } from "@llm_thread/components/llm_chat/llm_chat";
+import { Component, onWillDestroy, onMounted, useState } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 export class LLMChatContainer extends Component {
+  static template = "llm_thread.LLMChatContainer";
+  static components = { LLMChat };
+  static props = {
+    action: { type: Object },
+    actionId: { type: Number, optional: true },
+    className: { type: String, optional: true },
+    globalState: { type: Object, optional: true },
+  };
+
   setup() {
-    useModels();
-    super.setup();
+    this.llmChatService = useService("llm_chat");
+    this.state = useState({
+      isReady: false,
+    });
+    
+    onMounted(() => this._onMounted());
     onWillDestroy(() => this._willDestroy());
-
-    this.env.services.messaging.modelManager.messagingCreatedPromise.then(
-      async () => {
-        const { action } = this.props;
-        const initActiveId =
-          (action.context && action.context.active_id) ||
-          (action.params && action.params.default_active_id) ||
-          null;
-
-        if (!this.messaging.llmChat) {
-          this.messaging.update({
-            llmChat: {
-              isInitThreadHandled: false,
-            },
-          });
-        }
-        this.llmChat = this.messaging.llmChat;
-        this.llmChat.initializeLLMChat(action, initActiveId);
-      }
-    );
 
     // Keep track of current instance to handle cleanup
     LLMChatContainer.currentInstance = this;
   }
 
-  get messaging() {
-    return this.env.services.messaging.modelManager.messaging;
+  async _onMounted() {
+    const { action } = this.props;
+    const initActiveId =
+      (action.context && action.context.active_id) ||
+      (action.params && action.params.default_active_id) ||
+      null;
+
+    await this.llmChatService.initialize(action, initActiveId);
+    this.state.isReady = true;
   }
 
   _willDestroy() {
-    if (this.llmChat && LLMChatContainer.currentInstance === this) {
-      this.llmChat.close();
+    if (this.llmChatService && LLMChatContainer.currentInstance === this) {
+      this.llmChatService.close();
     }
   }
 }
 
-Object.assign(LLMChatContainer, {
-  props: {
-    action: Object,
-    actionId: { type: Number, optional: 1 },
-    className: String,
-    globalState: { type: Object, optional: 1 },
-  },
-  components: {
-    LLMChat: getMessagingComponent("LLMChat"),
-  },
-  template: "llm_thread.LLMChatContainer",
-});
 
-// Make sure the component is exported
 export default LLMChatContainer;

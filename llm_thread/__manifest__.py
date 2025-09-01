@@ -16,10 +16,11 @@ Key Features:
 - Optimized Performance: Efficient role-based message handling for better performance
 
 Recent Updates:
-- Refactored to use stored llm_role field for maximum efficiency
-- Improved performance with direct field filtering and comparison
-- Better integration with LLM base module's stored role field
-- Enhanced database performance with proper indexing on llm_role field
+- ✅ Migrated to Odoo 17 with modern Owl component architecture
+- ✅ Replaced deprecated mail model system with reactive services 
+- ✅ Enhanced performance with new service-based state management
+- ✅ Updated all JavaScript components for v17 compatibility
+- ✅ Optimized asset loading order and dependencies
 
 Getting Started:
 1. Install this module and the "LLM Integration Base" dependency
@@ -45,36 +46,24 @@ Contact: support@apexive.com
     ],
     "assets": {
         "web.assets_backend": [
-            # Models
+            # Core Services (Load first)
+            "llm_thread/static/src/services/llm_chat_service.js",
+            # Core Models & Patches
             "llm_thread/static/src/models/main.js",
-            "llm_thread/static/src/models/messaging.js",
-            "llm_thread/static/src/models/llm_chat.js",
-            "llm_thread/static/src/models/llm_chat_view.js",
-            "llm_thread/static/src/models/thread.js",
-            "llm_thread/static/src/models/composer.js",
-            "llm_thread/static/src/models/composer_view.js",
-            "llm_thread/static/src/models/llm_model.js",
-            "llm_thread/static/src/models/llm_provider.js",
-            "llm_thread/static/src/models/thread_view.js",
-            "llm_thread/static/src/models/llm_chat_thread_header_view.js",
-            "llm_thread/static/src/models/chatter.js",
-            "llm_thread/static/src/models/llm_tool.js",
+            "llm_thread/static/src/models/messaging.js", 
             "llm_thread/static/src/models/message.js",
-            "llm_thread/static/src/models/message_action.js",
-            "llm_thread/static/src/models/message_action_list.js",
-            "llm_thread/static/src/models/message_action_view.js",
-            "llm_thread/static/src/models/messaging_notification_handler.js",
+            "llm_thread/static/src/models/chatter.js",
             # Components
             "llm_thread/static/src/components/llm_chat/llm_chat.js",
             "llm_thread/static/src/components/llm_chat/llm_chat.xml",
-            "llm_thread/static/src/components/llm_chat_thread_list/llm_chat_thread_list.js",
-            "llm_thread/static/src/components/llm_chat_thread_list/llm_chat_thread_list.xml",
-            "llm_thread/static/src/components/llm_chat_thread/llm_chat_thread.js",
-            "llm_thread/static/src/components/llm_chat_thread/llm_chat_thread.scss",
-            "llm_thread/static/src/components/llm_chat_thread/llm_chat_thread.xml",
             "llm_thread/static/src/components/llm_chat_container/llm_chat_container.js",
             "llm_thread/static/src/components/llm_chat_container/llm_chat_container.xml",
             "llm_thread/static/src/components/llm_chat_container/llm_chat_container.scss",
+            "llm_thread/static/src/components/llm_chat_thread_list/llm_chat_thread_list.js",
+            "llm_thread/static/src/components/llm_chat_thread_list/llm_chat_thread_list.xml",
+            "llm_thread/static/src/components/llm_chat_thread/llm_chat_thread.js",
+            "llm_thread/static/src/components/llm_chat_thread/llm_chat_thread.xml",
+            "llm_thread/static/src/components/llm_chat_thread/llm_chat_thread.scss",
             "llm_thread/static/src/components/llm_chat_sidebar/llm_chat_sidebar.js",
             "llm_thread/static/src/components/llm_chat_sidebar/llm_chat_sidebar.xml",
             "llm_thread/static/src/components/llm_chat_sidebar/llm_chat_sidebar.scss",
@@ -89,28 +78,27 @@ Contact: support@apexive.com
             "llm_thread/static/src/components/llm_chat_thread_header/llm_chat_thread_header.js",
             "llm_thread/static/src/components/llm_chat_thread_header/llm_chat_thread_header.xml",
             "llm_thread/static/src/components/llm_chat_thread_header/llm_chat_thread_header.scss",
-            "llm_thread/static/src/components/llm_chatter_topbar/llm_chatter_topbar.xml",
-            "llm_thread/static/src/components/llm_chatter_topbar/llm_chat_topbar.scss",
-            "llm_thread/static/src/components/llm_chatter/llm_chatter.xml",
-            "llm_thread/static/src/components/message/message.xml",
-            "llm_thread/static/src/components/message/message.scss",
-            # Streaming indicator component
             "llm_thread/static/src/components/llm_streaming_indicator/llm_streaming_indicator.js",
             "llm_thread/static/src/components/llm_streaming_indicator/llm_streaming_indicator.xml",
-            # LLMChatThreadRelatedRecord Component
             "llm_thread/static/src/components/llm_chat_thread_related_record/llm_chat_thread_related_record.js",
             "llm_thread/static/src/components/llm_chat_thread_related_record/llm_chat_thread_related_record.xml",
             "llm_thread/static/src/components/llm_chat_thread_related_record/llm_chat_thread_related_record.scss",
-            # Client Actions - Load after all components are ready
+            # Chatter Integration Templates
+            "llm_thread/static/src/components/llm_chatter_topbar/llm_chatter_topbar.xml",
+            "llm_thread/static/src/components/llm_chatter_topbar/llm_chat_topbar.scss",
+            "llm_thread/static/src/components/llm_chatter/llm_chatter.xml", 
+            "llm_thread/static/src/components/message/message.xml",
+            "llm_thread/static/src/components/message/message.scss",
+            # Client Action (Load last)
             "llm_thread/static/src/llm_chat_client_action.js",
-            # Styles
+            # Global Styles
             (
                 "after",
                 "web/static/src/scss/pre_variables.scss",
                 "llm_thread/static/src/components/llm_chat/llm_chat.scss",
             ),
             (
-                "after",
+                "after", 
                 "web/static/src/scss/pre_variables.scss",
                 "llm_thread/static/src/components/llm_chat_thread_list/llm_chat_thread_list.scss",
             ),

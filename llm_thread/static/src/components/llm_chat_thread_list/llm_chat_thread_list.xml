@@ -26,7 +26,7 @@
             >
                             <span
                 class="o_DiscussSidebarCategoryItem_item o_DiscussSidebarCategoryItem_name ms-3 me-2 text-truncate"
-                t-esc="thread.name"
+                t-esc="thread?.name or 'Unnamed Thread'"
               />
                             <div
                 class="o_DiscussSidebarCategoryItem_item flex-grow-1"

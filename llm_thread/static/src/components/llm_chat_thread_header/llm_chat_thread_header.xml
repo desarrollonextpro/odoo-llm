@@ -26,12 +26,12 @@
                 <t t-if="!llmChatThreadHeaderView.isEditingName || isSmall">
                     <div
             class="o_ThreadViewTopbar_threadName o_ThreadViewTopbar_editableItem lead flex-shrink-1 px-1 border text-truncate fw-bold"
-            t-att-title="thread.name"
+            t-att-title="thread?.name or 'No thread selected'"
             t-on-click="llmChatThreadHeaderView.onClickTopbarThreadName"
             t-attf-class="{{ isSmall ? 'border-0' : 'border-light' }}"
             style="cursor: pointer;"
           >
-                        <t t-esc="thread.name" />
+                        <t t-esc="thread?.name or 'No thread selected'" />
                     </div>
                 </t>
                 <t t-if="llmChatThreadHeaderView.isEditingName and !isSmall">
@@ -86,7 +86,7 @@
                         <span class="text-truncate">
                             <t t-if="llmChatThreadHeaderView.selectedProvider">
                                 <t
-                  t-esc="llmChatThreadHeaderView.selectedProvider.name"
+                  t-esc="llmChatThreadHeaderView.selectedProvider?.name or 'Select Provider'"
                 />
                             </t>
                             <t t-else="">
@@ -108,7 +108,7 @@
                   t-att-title="provider.name"
                   t-attf-class="{{ llmChatThreadHeaderView.selectedProviderId === provider.id ? 'active' : '' }}"
                 >
-                                    <t t-esc="provider.name" />
+                                    <t t-esc="provider?.name or 'Unknown Provider'" />
                                 </a>
                             </li>
                         </t>
@@ -129,7 +129,7 @@
                         <span class="text-truncate">
                             <t t-if="llmChatThreadHeaderView.selectedModel">
                                 <t
-                  t-esc="llmChatThreadHeaderView.selectedModel.name"
+                  t-esc="llmChatThreadHeaderView.selectedModel?.name or 'Select Model'"
                 />
                             </t>
                             <t t-else="">
@@ -172,7 +172,7 @@
                       t-att-title="model.name"
                       t-attf-class="{{ llmChatThreadHeaderView.selectedModelId === model.id ? 'active' : '' }}"
                     >
-                                            <t t-esc="model.name" />
+                                            <t t-esc="model?.name or 'Unknown Model'" />
                                         </a>
                                     </li>
                                 </t>
@@ -240,7 +240,7 @@
                       class="form-check-label"
                       t-att-for="'tool-checkbox-' + tool.id"
                     >
-                                            <t t-esc="tool.name" />
+                                            <t t-esc="tool?.name or 'Unknown Tool'" />
                                         </label>
                                     </div>
                                 </t>

@@ -2,19 +2,18 @@
 <templates xml:space="preserve">
   <t t-name="llm_thread.ChatterContentExtension"
      t-inherit="mail.Chatter"
-     t-inherit-mode="extension"
-     owl="1">
+     t-inherit-mode="extension">
 
     <xpath expr="//div[contains(@class,'o-mail-Chatter-content')]" position="replace">
       <div class="o-mail-Chatter-content">
 
-        <t t-if="state.is_chatting_with_llm && llmChatThread">
+        <t t-if="state.is_chatting_with_llm and llmChatThread">
           <div class="px-3 pt-3">
             <LLMChatThread
               thread="llmChatThread"
               className="'o-llm-ChatterThread flex-grow-1'"
               onExit.bind="toggleLLMChat"
-              t-key="llmChatThread && llmChatThread.id"
+              t-key="llmChatThread and llmChatThread.id"
             />
           </div>
         </t>
