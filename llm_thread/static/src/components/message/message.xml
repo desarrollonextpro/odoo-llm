@@ -1,181 +1,137 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
-    <!-- ====================================================================== -->
-    <!-- Sub-templates for different message content types                    -->
-    <!-- ====================================================================== -->
+  <!-- ======= Sub-templates (iguales a los tuyos, si ya los tienes cargados) ======= -->
+  <!-- Si ya los declaraste en otro archivo, omite esta sección y solo deja la extensión -->
 
-    <t t-name="llm_thread.Message.AssistantContent">
-        <!-- Render final message body (processed by mail) -->
-        <t t-if="!messageView.composerViewInEditing">
-            <div class="o-mail-Message-prettyBody" t-ref="prettyBody" />
-        </t>
-        <!-- Display requested tool calls if any -->
-        <t
-      t-if="messageView.message.toolCalls and messageView.message.toolCalls.length > 0"
-    >
-            <div class="o_llm_tool_calls mt-2 small text-muted border-top pt-1">
-                <strong class="me-1">Tools Requested:</strong>
-                <t
-          t-foreach="messageView.message.toolCalls"
-          t-as="toolCall"
-          t-key="toolCall.id"
-        >
-                    <span
-            class="badge bg-light text-dark border me-1 mb-1"
-            t-att-title="'ID: ' + toolCall.id + '\nArgs: ' + toolCall.function?.arguments"
-          >
-                        <i class="fa fa-cog me-1" aria-hidden="true" />
-                        <t t-esc="toolCall.function?.name" />
-                    </span>
-                </t>
-            </div>
-        </t>
+  <t t-name="llm_thread.Message.AssistantContent" owl="1">
+    <t t-if="!state.isEditing">
+      <div class="o-mail-Message-prettyBody o_Message_prettyBody" t-ref="prettyBody"/>
     </t>
-
-    <t t-name="llm_thread.Message.ToolResultContent">
-        <div class="o-mail-Message-prettyBody o_llm_tool_result">
-            <div class="o_llm_tool_result_header small mb-1">
-                <!-- Show human-readable status from display_body -->
-                <p class="mb-2" t-ref="prettyBody" />
-                <strong class="me-2">
-                    <i
-            t-attf-class="fa me-1 {{ messageView.message.toolCallResultIsError ? 'fa-exclamation-circle text-danger' : 'fa-check-circle text-success' }}"
-          />
-                    Tool: <t
-            t-esc="messageView.message.toolName || messageView.message.toolCallDefinitionFormatted?.function?.name || 'Unknown Tool'"
-          />
-                </strong>
-                <span class="text-muted small">(ID: <t
-            t-esc="messageView.message.toolCallId || 'N/A'"
-          />)</span>
-            </div>
-            <!-- Display Arguments (optional, could be default collapsed) -->
-            <details class="o_llm_tool_result_args mb-1">
-                <summary class="text-muted" style="cursor: pointer;">
-                    <strong class="small">Arguments</strong>
-                </summary>
-                <pre class="bg-light p-1 rounded small mt-1"><code
-            t-esc="messageView.message.toolCallDefinitionFormatted?.function?.arguments || '{}'"
-          /></pre>
-            </details>
-            <!-- Display Result/Error Content -->
-            <div class="o_llm_tool_result_content mt-1">
-                <details>
-                    <summary class="text-muted" style="cursor: pointer;">
-                        <strong class="small">Result</strong>
-                    </summary>
-                    <t t-if="messageView.message.toolCallResultIsError">
-                        <pre
-              class="bg-danger-light border border-danger text-danger p-1 rounded small mt-1"
-            ><code
-                t-esc="messageView.message.toolCallResultData?.error || 'Unknown Error'"
-              /></pre>
-                    </t>
-                    <t t-else="">
-                        <!-- Render result nicely - assumes pretty print JSON -->
-                        <pre
-              class="bg-light border p-1 rounded small mt-1"
-            ><code t-esc="messageView.message.toolCallResultFormatted" /></pre>
-                    </t>
-                </details>
-            </div>
-        </div>
+    <t t-if="message.toolCalls && message.toolCalls.length">
+      <div class="o_llm_tool_calls mt-2 small text-muted border-top pt-1">
+        <strong class="me-1">Tools Requested:</strong>
+        <t t-foreach="message.toolCalls" t-as="toolCall" t-key="toolCall.id">
+          <span class="badge bg-light text-dark border me-1 mb-1"
+                t-att-title="'ID: ' + toolCall.id + '\nArgs: ' + (toolCall.function?.arguments || '')">
+            <i class="fa fa-cog me-1" aria-hidden="true"/>
+            <t t-esc="toolCall.function?.name"/>
+          </span>
+        </t>
+      </div>
     </t>
+  </t>
 
-    <t t-name="llm_thread.Message.DefaultContent">
-        <t t-if="!messageView.composerViewInEditing">
-            <div class="o-mail-Message-prettyBody" t-ref="prettyBody" />
-        </t>
-        <t t-if="messageView.composerViewInEditing">
-            <Composer
-                className="'o-mail-Message-composer'"
-                record="messageView.composerViewInEditing"
-            />
-        </t>
-        <t
-      t-if="messageView.message.subtype_description and !messageView.message.isBodyEqualSubtypeDescription"
-    >
-            <p t-esc="messageView.message.subtype_description" class="mb-0" />
-        </t>
-        <t t-if="messageView.message.trackingValues.length > 0">
-            <ul class="o-mail-Message-trackingValues mb-0 ps-4">
-                <t
-          t-foreach="messageView.message.trackingValues"
-          t-as="trackingValue"
-          t-key="trackingValue.id"
-        >
-                    <li>
-                        <TrackingValue value="trackingValue" />
-                    </li>
-                </t>
-            </ul>
-        </t>
+  <t t-name="llm_thread.Message.ToolResultContent" owl="1">
+    <div class="o-mail-Message-prettyBody o_Message_prettyBody o_llm_tool_result">
+      <div class="o_llm_tool_result_header small mb-1">
+        <p class="mb-2" t-ref="prettyBody"/>
+        <strong class="me-2">
+          <i t-attf-class="fa me-1 {{ message.toolCallResultIsError ? 'fa-exclamation-circle text-danger' : 'fa-check-circle text-success' }}"/>
+          Tool:
+          <t t-esc="message.toolName || message.toolCallDefinitionFormatted?.function?.name || 'Unknown Tool'"/>
+        </strong>
+        <span class="text-muted small">(ID: <t t-esc="message.toolCallId || 'N/A'"/>)</span>
+      </div>
+
+      <details class="o_llm_tool_result_args mb-1">
+        <summary class="text-muted" style="cursor:pointer;"><strong class="small">Arguments</strong></summary>
+        <pre class="bg-light p-1 rounded small mt-1"><code t-esc="message.toolCallDefinitionFormatted?.function?.arguments || '{}'"/></pre>
+      </details>
+
+      <div class="o_llm_tool_result_content mt-1">
+        <details>
+          <summary class="text-muted" style="cursor:pointer;"><strong class="small">Result</strong></summary>
+          <t t-if="message.toolCallResultIsError">
+            <pre class="bg-danger-light border border-danger text-danger p-1 rounded small mt-1">
+<code t-esc="message.toolCallResultData?.error || 'Unknown Error'"/></pre>
+          </t>
+          <t t-else="">
+            <pre class="bg-light border p-1 rounded small mt-1">
+<code t-esc="message.toolCallResultFormatted"/></pre>
+          </t>
+        </details>
+      </div>
+    </div>
+  </t>
+
+  <t t-name="llm_thread.Message.DefaultContent" owl="1">
+    <t t-if="!state.isEditing">
+      <div class="o-mail-Message-prettyBody o_Message_prettyBody" t-ref="prettyBody"/>
     </t>
-
-    <!-- ====================================================================== -->
-    <!-- Main Message Template Extension                                        -->
-    <!-- ====================================================================== -->
-
-    <t
-        t-name="llm_thread.Message"
-        t-inherit="mail.Message"
-        t-inherit-mode="extension"
-    >
-        <!--
-        Replace the main content rendering area.
-        We use the stored llm_role field for direct comparison.
-        -->
-        <xpath expr="//div[hasclass('o-mail-Message-content')]" position="replace">
-            <div class="o-mail-Message-content o-min-width-0" t-att-class="{ 'w-100': state.isEditing }">
-                <div class="o-mail-Message-textContent position-relative d-flex" t-att-class="{ 'w-100': state.isEditing }">
-                    <t t-if="messageView.message.type !== 'notification' and !messageView.message.is_transient and (messageView.message.hasTextContent or messageView.message.subtype_description or state.isEditing)">
-                        <div class="position-relative overflow-x-auto d-inline-block" t-att-class="{ 'w-100': state.isEditing }">
-                            <div class="o-mail-Message-bubble rounded-bottom-3 position-absolute top-0 start-0 w-100 h-100" t-att-class="{
-                                'border': state.isEditing and !messageView.message.is_note,
-                                'bg-info-light border border-info opacity-25': !messageView.message.isSelfAuthored and !messageView.message.is_note and !messageView.message.isHighlightedFromMention,
-                                'bg-success-light border border-success opacity-25': messageView.message.isSelfAuthored and !messageView.message.is_note and !messageView.message.isHighlightedFromMention,
-                                'bg-warning-light border border-warning opacity-50': messageView.message.isHighlightedFromMention,
-                                }" t-attf-class="{{ isAlignedRight ? 'rounded-start-3' : 'rounded-end-3' }}"/>
-                            
-                            <div class="position-relative text-break p-2" t-att-class="{
-                                'opacity-75': messageView.message.isSquashed,
-                                'o-mail-Message-content--failed': messageView.message.isFailed
-                            }">
-                                <!-- Use the stored llm_role field for direct comparison -->
-                                <t t-if="messageView.message.llmRole === 'assistant'">
-                                    <t t-call="llm_thread.Message.AssistantContent" />
-                                </t>
-                                <t t-elif="messageView.message.llmRole === 'tool'">
-                                    <t t-call="llm_thread.Message.ToolResultContent" />
-                                </t>
-                                <t t-else="">
-                                    <t t-call="llm_thread.Message.DefaultContent" />
-                                </t>
-                            </div>
-                        </div>
-                    </t>
-                    <t t-else="">
-                        <!-- Fallback for notification messages without bubble -->
-                        <div class="position-relative text-break" t-att-class="{
-                            'opacity-75': messageView.message.isSquashed,
-                            'o-mail-Message-content--failed': messageView.message.isFailed
-                        }">
-                            <t t-if="messageView.message.llmRole === 'assistant'">
-                                <t t-call="llm_thread.Message.AssistantContent" />
-                            </t>
-                            <t t-elif="messageView.message.llmRole === 'tool'">
-                                <t t-call="llm_thread.Message.ToolResultContent" />
-                            </t>
-                            <t t-else="">
-                                <t t-call="llm_thread.Message.DefaultContent" />
-                            </t>
-                        </div>
-                    </t>
-                </div>
-                <div class="o-mail-Message-linkPreviews" />
-            </div>
-        </xpath>
+    <t t-if="state.isEditing">
+      <Composer autofocus="true"
+                composer="message.composer"
+                messageComponent="constructor"
+                onDiscardCallback.bind="exitEditMode"
+                onPostCallback.bind="exitEditMode"
+                mode="env.inChatter ? 'extended' : 'compact'"
+                sidebar="false"/>
     </t>
+    <t t-if="showSubtypeDescription" t-out="props.messageSearch?.highlight(message.subtype_description) ?? message.subtype_description"/>
+  </t>
+
+  <!-- ======= Extensión principal: reemplaza SOLO el cuerpo ======= -->
+  <t t-name="llm_thread.MessageExtension"
+     t-inherit="mail.Message"
+     t-inherit-mode="extension"
+     owl="1">
+
+    <!-- Sustituimos el bloque 'o-mail-Message-body' conservando t-ref="body" -->
+    <xpath expr="//div[contains(@class,'o-mail-Message-body')]" position="replace">
+      <div class="position-relative text-break o-mail-Message-body"
+           t-att-class="{
+             'p-1': message.is_note,
+             'mb-0 py-2 px-3': !message.is_note,
+             'align-self-start rounded-end-3 rounded-bottom-3': !state.isEditing && !message.is_note,
+             'o-mail-Message-editable flex-grow-1': state.isEditing,
+           }"
+           t-ref="body">
+
+        <!-- Si está en modo edición, mantiene el comportamiento nativo -->
+        <t t-if="state.isEditing">
+          <Composer autofocus="true"
+                    composer="message.composer"
+                    messageComponent="constructor"
+                    onDiscardCallback.bind="exitEditMode"
+                    onPostCallback.bind="exitEditMode"
+                    mode="env.inChatter ? 'extended' : 'compact'"
+                    sidebar="false"/>
+        </t>
+
+        <!-- Si NO está editando, decidimos por llmRole -->
+        <t t-else="">
+          <!-- Subject (igual que base v17, antes del cuerpo) -->
+          <em t-if="message.subject and !message.isSubjectSimilarToOriginThreadName and !message.isSubjectDefault"
+              class="mb-1 me-2">Subject:
+            <t t-out="props.messageSearch?.highlight(message.subject) ?? message.subject"/>
+          </em>
+
+          <!-- LLM roles -->
+          <t t-if="message.llmRole === 'assistant'">
+            <t t-call="llm_thread.Message.AssistantContent"/>
+          </t>
+          <t t-elif="message.llmRole === 'tool'">
+            <t t-call="llm_thread.Message.ToolResultContent"/>
+          </t>
+
+          <!-- Fallback al comportamiento nativo cuando no es LLM -->
+          <t t-else="">
+            <div class="overflow-x-auto" t-if="message.type && message.type.includes('email')" t-ref="shadowBody"/>
+            <t t-elif="state.showTranslation" t-out="message.translationValue"/>
+            <t t-elif="message.body" t-out="props.messageSearch?.highlight(message.body) ?? message.body"/>
+            <p class="fst-italic text-muted small" t-if="state.showTranslation">
+              <t t-if="message.translationSource" t-esc="translatedFromText"/>
+            </p>
+            <p class="fst-italic text-muted small" t-if="message.translationErrors">
+              <i class="text-danger fa fa-warning" role="img" aria-label="Translation Failure"/>
+              <t t-if="message.translationErrors" t-esc="translationFailureText"/>
+            </p>
+            <t t-if="showSubtypeDescription" t-out="props.messageSearch?.highlight(message.subtype_description) ?? message.subtype_description"/>
+          </t>
+        </t>
+      </div>
+    </xpath>
+  </t>
 
 </templates>
