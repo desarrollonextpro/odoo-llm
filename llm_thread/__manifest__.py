@@ -46,6 +46,8 @@ Contact: support@apexive.com
     ],
     "assets": {
         "web.assets_backend": [
+            # Service Worker Cleanup (Load first)
+            #"llm_thread/static/src/service_worker_cleanup.js",
             # Core Services (Load first)
             "llm_thread/static/src/services/llm_chat_service.js",
             # Core Models & Patches

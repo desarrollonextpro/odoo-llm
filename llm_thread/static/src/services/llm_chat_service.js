@@ -21,6 +21,7 @@ export class LLMChatService {
             activeThread: null,
             threads: [],
             llmModels: [],
+            llmAssistants: [],
             tools: [],
             isStreaming: false,
             isInitThreadHandled: false,
@@ -43,6 +44,7 @@ export class LLMChatService {
         this.state.isInitThreadHandled = false;
 
         await this.loadLLMModels();
+        await this.loadLLMAssistants();
         await this.loadThreads();
         await this.loadTools();
 
@@ -109,6 +111,37 @@ export class LLMChatService {
             }));
         } catch (error) {
             console.error("Error loading LLM models:", error);
+        }
+    }
+
+    /**
+     * Load LLM assistants from server
+     */
+    async loadLLMAssistants() {
+        try {
+            console.log("LLM Chat Service: Loading assistants...");
+            
+            const result = await this.orm.searchRead(
+                "llm.assistant",
+                [["active", "=", true]],
+                ["name", "id", "prompt_id", "code", "is_default"]
+            );
+
+            console.log("LLM Chat Service: Found assistants:", result);
+
+            this.state.llmAssistants = result.map(assistant => ({
+                id: assistant.id,
+                name: assistant.name,
+                code: assistant.code,
+                isDefault: assistant.is_default,
+                promptId: assistant.prompt_id ? assistant.prompt_id[0] : null,
+            }));
+            
+            console.log("LLM Chat Service: Mapped assistants:", this.state.llmAssistants);
+        } catch (error) {
+            console.error("LLM Chat Service: Error loading LLM assistants:", error);
+            // Set empty array on error to prevent undefined issues
+            this.state.llmAssistants = [];
         }
     }
 

@@ -5,6 +5,10 @@ import { useService } from "@web/core/utils/hooks";
 
 export class LLMChat extends Component {
   static template = "llm_thread.LLMChat";
+  static props = {
+    action: { type: Object, optional: true },
+    actionId: { type: Number, optional: true },
+  };
 
   setup() {
     this.llmChatService = useService("llm_chat");

@@ -20,6 +20,31 @@ export class LLMChatThreadHeader extends Component {
       selectedModelId: null,
       selectedProviderId: null,
     });
+
+    // Watch for thread changes
+    this._watchThreadChanges();
+  }
+
+  /**
+   * Watch for thread changes and call _onThreadChanged if it exists
+   */
+  _watchThreadChanges() {
+    // Use a simple interval to check for thread changes
+    // In a more sophisticated implementation, you might use a proper reactive system
+    this._threadCheckInterval = setInterval(() => {
+      if (this._onThreadChanged && typeof this._onThreadChanged === 'function') {
+        this._onThreadChanged();
+      }
+    }, 1000);
+  }
+
+  /**
+   * Clean up interval on component destruction
+   */
+  willUnmount() {
+    if (this._threadCheckInterval) {
+      clearInterval(this._threadCheckInterval);
+    }
   }
 
   get thread() {

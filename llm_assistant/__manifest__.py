@@ -61,14 +61,18 @@ Use cases include creating specialized assistants for customer support, data ana
     ],
     "assets": {
         "web.assets_backend": [
+            # Dependencies (Load first)
+            "llm_thread/static/src/services/llm_chat_service.js",
+            "llm_thread/static/src/components/llm_chat_thread_header/llm_chat_thread_header.js",
+            "llm_thread/static/src/components/llm_chat_thread_header/llm_chat_thread_header.xml",
+            # Models (Load after dependencies)
             "llm_assistant/static/src/models/main.js",
-            # Models
             "llm_assistant/static/src/models/llm_assistant.js",
             "llm_assistant/static/src/models/llm_prompt.js",
             "llm_assistant/static/src/models/llm_chat.js",
             "llm_assistant/static/src/models/thread.js",
             "llm_assistant/static/src/models/llm_chat_thread_header_view.js",
-            # Components
+            # Components (Load last)
             "llm_assistant/static/src/components/llm_chat_thread_header/llm_chat_thread_header.js",
             "llm_assistant/static/src/components/llm_chat_thread_header/llm_chat_thread_header.xml",
         ],

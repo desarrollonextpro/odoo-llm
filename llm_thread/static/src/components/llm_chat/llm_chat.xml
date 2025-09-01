@@ -3,20 +3,23 @@
     <t t-name="llm_thread.LLMChat" >
         <div class="o_LLMChat d-flex h-100">
             <!-- Thread List Section -->
-            <LLMChatSidebar record="llmChatView" />
+            <LLMChatSidebar 
+                t-if="isActive"
+                threads="threads"
+                activeThread="activeThread"
+            />
 
             <!-- Chat Section -->
             <div class="o_LLMChat_content flex-grow-1">
-                <t t-if="llmChatView.llmChat.activeThread">
+                <t t-if="activeThread">
                     <LLMChatThread
-            record="llmChatView.llmChat.activeThread"
-            threadView="llmChatView.threadView"
-          />
+                        thread="activeThread"
+                    />
                 </t>
                 <t t-else="">
                     <div
-            class="o_LLMChat_noThread d-flex align-items-center justify-content-center h-100"
-          >
+                        class="o_LLMChat_noThread d-flex align-items-center justify-content-center h-100"
+                    >
                         <span>Select a conversation to start chatting</span>
                     </div>
                 </t>

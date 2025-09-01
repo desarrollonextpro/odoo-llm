@@ -6,3 +6,6 @@ import "@llm_assistant/models/llm_assistant";
 import "@llm_assistant/models/llm_prompt";
 import "@llm_assistant/models/thread";
 import "@llm_assistant/models/llm_chat_thread_header_view";
+
+// Log successful initialization
+console.log("LLM Assistant: Models loaded successfully");
