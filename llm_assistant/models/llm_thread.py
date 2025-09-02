@@ -33,20 +33,25 @@ class LLMThread(models.Model):
             self.tool_ids = self.assistant_id.tool_ids
             self.prompt_id = self.assistant_id.prompt_id
 
-    def set_assistant(self, assistant_id):
-        """Set the assistant for this thread and update related fields
+    @api.model
+    def set_assistant(self, thread_id, assistant_id):
+        """Set the assistant for a thread and update related fields
 
         Args:
+            thread_id (int): The ID of the thread
             assistant_id (int): The ID of the assistant to set
 
         Returns:
             bool: True if successful, False otherwise
         """
-        self.ensure_one()
+        # Get the thread record
+        thread = self.browse(thread_id)
+        if not thread.exists():
+            return False
 
         # If assistant_id is False or 0, just clear the assistant
         if not assistant_id:
-            return self.write({"assistant_id": False})
+            return thread.write({"assistant_id": False})
 
         # Get the assistant record
         assistant = self.env["llm.assistant"].browse(assistant_id)
@@ -64,7 +69,7 @@ class LLMThread(models.Model):
             update_vals["model_id"] = assistant.model_id.id
         if assistant.prompt_id.id:
             update_vals["prompt_id"] = assistant.prompt_id.id
-        return self.write(update_vals)
+        return thread.write(update_vals)
 
     def action_open_thread(self):
         """Open the thread in the chat client interface

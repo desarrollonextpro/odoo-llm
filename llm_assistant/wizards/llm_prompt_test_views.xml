@@ -77,8 +77,7 @@
                                 <group string="Test Context">
                                     <field
                     name="test_context"
-                    widget="ace"
-                    options="{'mode': 'json'}"
+                    widget="text"
                     placeholder='{\n  "argument1": "value1",\n  "argument2": "value2"\n}'
                   />
                                 </group>
@@ -108,8 +107,7 @@
                         <page string="Rendered Template" name="template">
                             <field
                 name="rendered_template"
-                widget="ace"
-                options="{'mode': 'text', 'showPrintMargin': false}"
+                widget="text"
                 readonly="1"
                 placeholder="Select a record or click 'Evaluate Prompt' to see the rendered template..."
               />
@@ -141,8 +139,7 @@
               >
                                 <field
                   name="messages_json"
-                  widget="ace"
-                  options="{'mode': 'json', 'showPrintMargin': false}"
+                  widget="text"
                   readonly="1"
                   placeholder="Select a record or click 'Evaluate Prompt' to see the generated messages in JSON format..."
                 />
@@ -154,8 +151,7 @@
               >
                                 <field
                   name="messages_yaml"
-                  widget="ace"
-                  options="{'mode': 'yaml', 'showPrintMargin': false}"
+                  widget="text"
                   readonly="1"
                   placeholder="Select a record or click 'Evaluate Prompt' to see the generated messages in YAML format..."
                 />
@@ -219,8 +215,7 @@
                             <group string="Original Template">
                                 <field
                   name="original_template"
-                  widget="ace"
-                  options="{'mode': 'text', 'showPrintMargin': false}"
+                  widget="text"
                   readonly="1"
                   nolabel="1"
                 />
@@ -230,8 +225,7 @@
                             <group string="Arguments Schema">
                                 <field
                   name="arguments_schema"
-                  widget="ace"
-                  options="{'mode': 'json', 'showPrintMargin': false}"
+                  widget="text"
                   readonly="1"
                   nolabel="1"
                 />

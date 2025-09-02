@@ -73,26 +73,26 @@ const patchLLMChatThreadHeader = () => {
             if (!assistant || !this.thread) {
               return;
             }
-
-            // Update local state immediately
-            this.state.selectedAssistantId = assistant.id;
             
-            // Update on server
+            // Update on server first
             if (this.llmChatService && this.llmChatService.orm) {
               await this.llmChatService.orm.call(
                 "llm.thread",
                 "set_assistant",
-                [],
-                {
-                  thread_id: this.thread.id,
-                  assistant_id: assistant.id,
-                }
+                [this.thread.id, assistant.id]
               );
+              
+              // Update local state after successful server update
+              this.state.selectedAssistantId = assistant.id;
+              
+              // Also update the thread object if it exists
+              if (this.thread) {
+                this.thread.assistant_id = assistant.id;
+              }
             }
           } catch (error) {
             console.error("LLM Assistant: Error selecting assistant:", error);
-            // Revert local state on error
-            this.state.selectedAssistantId = null;
+            // Keep current state on error
           }
         },
 
@@ -104,21 +104,22 @@ const patchLLMChatThreadHeader = () => {
             if (!this.thread) {
               return;
             }
-
-            // Update local state immediately
-            this.state.selectedAssistantId = null;
             
-            // Update on server
+            // Update on server first
             if (this.llmChatService && this.llmChatService.orm) {
               await this.llmChatService.orm.call(
                 "llm.thread",
                 "set_assistant",
-                [],
-                {
-                  thread_id: this.thread.id,
-                  assistant_id: false,
-                }
+                [this.thread.id, false]
               );
+              
+              // Update local state after successful server update
+              this.state.selectedAssistantId = null;
+              
+              // Also update the thread object if it exists
+              if (this.thread) {
+                this.thread.assistant_id = false;
+              }
             }
           } catch (error) {
             console.error("LLM Assistant: Error clearing assistant:", error);
@@ -130,8 +131,10 @@ const patchLLMChatThreadHeader = () => {
          */
         _onThreadChanged() {
           try {
-            if (this.thread && this.thread.assistant_id) {
-              this.state.selectedAssistantId = this.thread.assistant_id;
+            if (this.thread) {
+              // If thread has an assistant_id, use it. Otherwise, check if it's explicitly false/null
+              const assistantId = this.thread.assistant_id;
+              this.state.selectedAssistantId = assistantId || null;
             } else {
               this.state.selectedAssistantId = null;
             }

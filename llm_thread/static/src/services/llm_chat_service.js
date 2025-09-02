@@ -205,8 +205,12 @@ export class LLMChatService {
 
         try {
             const threadId = await this.orm.create("llm.thread", [threadData]);
+            console.log("Created thread ID:", threadId, "Type:", typeof threadId);
+            
+            // orm.create returns a single ID when creating one record
             const threadDetails = await this.orm.read("llm.thread", [threadId], 
                 ["name", "model_id", "provider_id", "write_date"]);
+            console.log("Thread details:", threadDetails);
 
             if (!threadDetails || !threadDetails[0]) {
                 this.notification.add("Failed to create thread", { type: "danger", title: "Error" });

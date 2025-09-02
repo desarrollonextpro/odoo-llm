@@ -20,6 +20,7 @@
                     <!-- Message List -->
                     <LLMChatMessageList
             thread="thread"
+            isStreaming="isStreaming"
           />
                 </t>
             </div>

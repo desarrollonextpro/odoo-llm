@@ -48,7 +48,7 @@
                                             AI Assistant
                                         </t>
                                     </div>
-                                    <div t-out="message.body" />
+                                    <div t-out="message.body" class="message-content" />
                                 </div>
                             </div>
                         </div>

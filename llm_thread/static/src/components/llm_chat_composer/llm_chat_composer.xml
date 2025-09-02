@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="llm_thread.LLMChatComposer" >
-        <div class="o_LLMChatComposer">
+        <div class="o_LLMChatComposer" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
             <div
         class="o_LLMChatComposer_container d-flex align-items-end gap-3 mx-auto"
         style="max-width: 1200px;"
       >
                 <LLMChatComposerTextInput 
-                    t-props="{ 
-                        value: state.messageInput,
-                        placeholder: 'Ask anything...',
-                        disabled: isDisabled,
-                        onInput: onInputChange,
-                        onKeydown: onKeydown
-                    }"
+                    value="state.messageInput"
+                    placeholder="'Ask anything...'"
+                    disabled="isDisabled"
+                    onInput="onInputChange"
+                    onKeydown="onKeydown"
                 />
                 <t t-if="!isStreaming">
                     <button
