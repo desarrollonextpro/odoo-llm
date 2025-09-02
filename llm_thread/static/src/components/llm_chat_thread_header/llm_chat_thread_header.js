@@ -140,6 +140,19 @@ export class LLMChatThreadHeader extends Component {
   }
 
   /**
+   * Handle keydown events for thread name input
+   */
+  _onKeydownThreadNameInput(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this._onSaveName();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this._onCancelEditName();
+    }
+  }
+
+  /**
    * Handle model selection
    */
   async onSelectModel(model) {
@@ -208,5 +221,27 @@ export class LLMChatThreadHeader extends Component {
       // Revert checkbox state
       event.target.checked = !event.target.checked;
     }
+  }
+
+  /**
+   * Handle model search input
+   */
+  _onModelSearchInput(event) {
+    this.state.modelSearchQuery = event.target.value;
+  }
+
+  /**
+   * Handle model search click (prevent dropdown close)
+   */
+  _onModelSearchClick(event) {
+    event.stopPropagation();
+  }
+
+  /**
+   * Handle settings button click
+   */
+  _onClickSettings() {
+    // Placeholder for settings functionality
+    console.log("Settings clicked");
   }
 }

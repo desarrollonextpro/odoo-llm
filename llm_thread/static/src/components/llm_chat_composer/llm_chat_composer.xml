@@ -7,11 +7,13 @@
         style="max-width: 1200px;"
       >
                 <LLMChatComposerTextInput 
-                    value="state.messageInput"
-                    placeholder="Ask anything..."
-                    disabled="isDisabled"
-                    onInput="onInputChange"
-                    onKeydown="onKeydown"
+                    t-props="{ 
+                        value: state.messageInput,
+                        placeholder: 'Ask anything...',
+                        disabled: isDisabled,
+                        onInput: onInputChange,
+                        onKeydown: onKeydown
+                    }"
                 />
                 <t t-if="!isStreaming">
                     <button

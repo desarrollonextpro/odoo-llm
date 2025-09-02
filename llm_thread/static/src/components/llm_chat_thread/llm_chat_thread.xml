@@ -20,7 +20,6 @@
                     <!-- Message List -->
                     <LLMChatMessageList
             thread="thread"
-            messages="thread.messages"
           />
                 </t>
             </div>

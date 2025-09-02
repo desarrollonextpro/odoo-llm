@@ -41,7 +41,7 @@
             autofocus="autofocus"
             t-att-value="state.tempName"
             t-model="state.tempName"
-            t-on-keydown="(ev) => { if (ev.key === 'Enter') { _onSaveName(); } else if (ev.key === 'Escape') { _onCancelEditName(); } }"
+            t-on-keydown="_onKeydownThreadNameInput"
             t-ref="nameInput"
             title="Press Enter to save, Esc to cancel"
             data-bs-toggle="tooltip"
@@ -104,7 +104,7 @@
                                 <a
                   class="dropdown-item text-truncate"
                   href="#"
-                  t-on-click.prevent="() => this.onSelectProvider(provider)"
+                  t-on-click.prevent="(ev) => this.onSelectProvider(provider)"
                   t-att-title="provider.name"
                   t-attf-class="{{ state.selectedProviderId === provider.id ? 'active' : '' }}"
                 >
@@ -150,8 +150,8 @@
                 class="form-control form-control-sm"
                 placeholder="Search models..."
                 t-att-value="state.modelSearchQuery or ''"
-                t-on-input="(ev) => { state.modelSearchQuery = ev.target.value; }"
-                t-on-click="(ev) => { ev.stopPropagation(); }"
+                t-on-input="_onModelSearchInput"
+                t-on-click="_onModelSearchClick"
                 t-ref="modelSearchInput"
                 aria-label="Search models"
               />
@@ -168,7 +168,7 @@
                                         <a
                       href="#"
                       class="dropdown-item text-truncate d-block"
-                      t-on-click.prevent="() => onSelectModel(model)"
+                      t-on-click.prevent="(ev) => this.onSelectModel(model)"
                       t-att-title="model.name"
                       t-attf-class="{{ state.selectedModelId === model.id ? 'active' : '' }}"
                     >
@@ -234,7 +234,7 @@
                       t-att-id="'tool-checkbox-' + tool.id"
                       t-att-value="tool.id"
                       t-att-checked="thread.selectedToolIds and thread.selectedToolIds.includes(tool.id)"
-                      t-on-change="(ev) => onToolSelectChange(ev, tool)"
+                      t-on-change="(ev) => this.onToolSelectChange(ev, tool)"
                     />
                                         <label
                       class="form-check-label"
@@ -259,7 +259,7 @@
             <button
         class="o_ThreadViewTopbar_button btn px-2 border-none rounded shadow-none ms-auto flex-shrink-0"
         t-if="isSmall"
-        t-on-click="() => {}"
+        t-on-click="_onClickSettings"
         title="Settings"
       >
                 <i class="fa fa-lg fa-gear text-700" />
