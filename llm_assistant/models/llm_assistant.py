@@ -544,3 +544,8 @@ class LLMAssistant(models.Model):
     def get_assistant_by_code(self, code):
         """Get assistant by code"""
         return self.search([('code', '=', code)], limit=1)
+
+    def toggle_active(self):
+        """Toggle the active state of the assistant"""
+        for record in self:
+            record.active = not record.active

@@ -110,8 +110,7 @@
                             <group>
                                 <field
                   name="default_values"
-                  widget="ace"
-                  options="{'mode': 'json'}"
+                  widget="text"
                 />
                                 <field
                   name="has_dynamic_defaults"
@@ -194,23 +193,20 @@
                                 <!-- v17 correcto: 3 copias con options distintas y visibilidad condicional -->
                                 <field
                   name="template"
-                  widget="ace"
+                  widget="text"
                   readonly="1"
-                  options="{'mode': 'text'}"
                   invisible="not prompt_id or template_format != 'text'"
                 />
                                 <field
                   name="template"
-                  widget="ace"
+                  widget="text"
                   readonly="1"
-                  options="{'mode': 'yaml'}"
                   invisible="not prompt_id or template_format != 'yaml'"
                 />
                                 <field
                   name="template"
-                  widget="ace"
+                  widget="text"
                   readonly="1"
-                  options="{'mode': 'json'}"
                   invisible="not prompt_id or template_format != 'json'"
                 />
                             </group>
@@ -231,8 +227,7 @@
                         <page string="Preview" name="preview">
                             <field
                 name="system_prompt_preview"
-                widget="ace"
-                options="{'mode': 'markdown'}"
+                widget="text"
                 readonly="1"
               />
                         </page>

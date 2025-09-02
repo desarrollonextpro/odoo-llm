@@ -51,11 +51,11 @@
                     </div>
                     <group>
                         <group>
-                            <field name="category_id" />
+                            <field name="category_id" options="{'no_create': False, 'no_open': False}" />
                             <field
                 name="tag_ids"
                 widget="many2many_tags"
-                options="{'color_field': 'color'}"
+                options="{'color_field': 'color', 'no_create': False}"
               />
                             <field name="format" />
                         </group>
@@ -88,8 +88,7 @@
                             </div>
                             <field
                 name="template"
-                widget="ace"
-                options="{'mode': 'text'}"
+                widget="text"
                 placeholder="Enter your prompt template here..."
               />
                             <div class="alert alert-info" role="alert">
@@ -151,7 +150,7 @@
                             <group>
                                 <field
                   name="arguments_json"
-                  widget="json_editor"
+                  widget="text"
                   placeholder="{
   'user_name': {
     'type': 'string',
@@ -169,7 +168,7 @@
                                 <field
                   name="input_schema_json"
                   readonly="1"
-                  widget="json_editor"
+                  widget="text"
                 />
                             </group>
                             <div class="alert alert-info" role="alert">
@@ -207,10 +206,12 @@
                             <field
                 name="provider_ids"
                 widget="many2many_tags"
+                options="{'no_create': False}"
               />
                             <field
                 name="publisher_ids"
                 widget="many2many_tags"
+                options="{'no_create': False}"
               />
                         </page>
                     </notebook>

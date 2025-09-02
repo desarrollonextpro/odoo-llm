@@ -636,3 +636,8 @@ class LLMPrompt(models.Model):
 
         # Return the schema as a Python dictionary
         return schema
+
+    def toggle_active(self):
+        """Toggle the active state of the prompt"""
+        for record in self:
+            record.active = not record.active
