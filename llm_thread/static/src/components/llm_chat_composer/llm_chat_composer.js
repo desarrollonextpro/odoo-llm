@@ -37,14 +37,15 @@ export class LLMChatComposer extends Component {
   /**
    * Handle input change
    */
-  onInputChange(event) {
+  onInputChange = (event) => {
     this.state.messageInput = event.target.value;
+    console.log("Input changed:", event.target.value);
   }
 
   /**
    * Handle send button click
    */
-  async onClickSend() {
+  onClickSend = async () => {
     if (this.isDisabled) {
       return;
     }
@@ -57,14 +58,14 @@ export class LLMChatComposer extends Component {
   /**
    * Handle stop button click
    */
-  onClickStop() {
+  onClickStop = () => {
     this.llmChatService.stopStreaming();
   }
 
   /**
    * Handle keydown events (e.g., Enter to send)
    */
-  onKeydown(event) {
+  onKeydown = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       this.onClickSend();

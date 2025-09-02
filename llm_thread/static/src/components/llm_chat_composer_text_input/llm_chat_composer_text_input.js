@@ -17,14 +17,7 @@ export class LLMChatComposerTextInput extends Component {
     
     onMounted(() => {
       if (this.textareaRef.el) {
-        // Set the value if provided
-        if (this.props.value) {
-          this.textareaRef.el.value = this.props.value;
-        }
-        // Focus on the textarea to enable typing
-        setTimeout(() => {
-          this.textareaRef.el.focus();
-        }, 100);
+        this.textareaRef.el.focus();
       }
     });
   }
@@ -32,7 +25,7 @@ export class LLMChatComposerTextInput extends Component {
   /**
    * Handle input events
    */
-  onInput(event) {
+  onInput = (event) => {
     if (this.props.onInput) {
       this.props.onInput(event);
     }
@@ -41,7 +34,7 @@ export class LLMChatComposerTextInput extends Component {
   /**
    * Handle keydown events
    */
-  onKeydown(event) {
+  onKeydown = (event) => {
     if (this.props.onKeydown) {
       this.props.onKeydown(event);
     }

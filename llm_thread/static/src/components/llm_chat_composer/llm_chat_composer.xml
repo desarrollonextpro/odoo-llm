@@ -7,9 +7,6 @@
         style="max-width: 1200px;"
       >
                 <LLMChatComposerTextInput 
-                    value="state.messageInput"
-                    placeholder="'Ask anything...'"
-                    disabled="isDisabled"
                     onInput="onInputChange"
                     onKeydown="onKeydown"
                 />

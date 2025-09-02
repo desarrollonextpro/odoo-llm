@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="llm_thread.LLMChatComposerTextInput" >
-        <div class="o_LLMChatComposerTextInput position-relative bg-view flex-grow-1" t-ref="root">
+        <div class="flex-grow-1">
             <textarea
-                class="o_LLMChatComposerTextInput_textarea form-control border bg-light py-3 px-4"
-                t-att-placeholder="placeholder"
-                t-att-disabled="props.disabled"
+                class="form-control"
+                placeholder="Ask anything..."
                 t-on-keydown="onKeydown"
                 t-on-input="onInput"
                 t-ref="textarea"
-                rows="1"
-                style="resize: none; min-height: 50px;"
+                rows="3"
+                style="resize: vertical;"
             />
         </div>
     </t>

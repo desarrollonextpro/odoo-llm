@@ -169,13 +169,26 @@ export class LLMChatService {
      * Select thread as active
      */
     async selectThread(threadId) {
+        console.log("Selecting thread:", threadId);
+        console.log("Available threads:", this.state.threads.map(t => t.id));
+        
         const thread = this.state.threads.find(t => t.id === threadId);
         if (thread) {
+            console.log("Found thread:", thread.name);
             this.state.activeThread = thread;
-            this.router.pushState({
-                action: this.state.actionId,
-                active_id: `llm.thread_${threadId}`,
-            });
+            
+            try {
+                if (this.router && this.router.pushState) {
+                    this.router.pushState({
+                        action: this.state.actionId,
+                        active_id: `llm.thread_${threadId}`,
+                    });
+                }
+            } catch (error) {
+                console.warn("Error updating router state:", error);
+            }
+        } else {
+            console.error("Thread not found with ID:", threadId);
         }
     }
 
@@ -183,13 +196,19 @@ export class LLMChatService {
      * Create a new thread
      */
     async createThread({ name, relatedThreadModel, relatedThreadId }) {
+        console.log("Creating thread with name:", name);
+        console.log("LLM Models available:", this.state.llmModels);
+        
         const defaultModel = this.defaultLLMModel;
+        console.log("Default model:", defaultModel);
+        
         if (!defaultModel) {
+            console.error("No default LLM model available");
             this.notification.add(
                 "Please add a new LLMModel to use this feature",
                 { type: "warning", title: "No LLMModel available" }
             );
-            throw new Error("No LLM model available");
+            return null;
         }
 
         const threadData = {
