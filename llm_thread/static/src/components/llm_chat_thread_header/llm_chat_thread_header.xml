@@ -23,40 +23,40 @@
             <div
         class="o_ThreadViewTopbar_title d-flex flex-grow-1 align-items-center min-w-0 me-2"
       >
-                <t t-if="!llmChatThreadHeaderView.isEditingName || isSmall">
+                <t t-if="!state.isEditingName || isSmall">
                     <div
             class="o_ThreadViewTopbar_threadName o_ThreadViewTopbar_editableItem lead flex-shrink-1 px-1 border text-truncate fw-bold"
             t-att-title="thread?.name or 'No thread selected'"
-            t-on-click="llmChatThreadHeaderView.onClickTopbarThreadName"
+            t-on-click="_onEditName"
             t-attf-class="{{ isSmall ? 'border-0' : 'border-light' }}"
             style="cursor: pointer;"
           >
                         <t t-esc="thread?.name or 'No thread selected'" />
                     </div>
                 </t>
-                <t t-if="llmChatThreadHeaderView.isEditingName and !isSmall">
+                <t t-if="state.isEditingName and !isSmall">
                     <input
             class="o_ThreadViewTopbar_threadNameInput form-control lead fw-bold o_input_tooltip flex-shrink-1"
             type="text"
             autofocus="autofocus"
-            t-att-value="llmChatThreadHeaderView.pendingName"
-            t-on-input="onInputThreadNameInput"
-            t-on-keydown="onKeyDownThreadNameInput"
-            t-ref="threadNameInput"
+            t-att-value="state.tempName"
+            t-model="state.tempName"
+            t-on-keydown="(ev) => { if (ev.key === 'Enter') { _onSaveName(); } else if (ev.key === 'Escape') { _onCancelEditName(); } }"
+            t-ref="nameInput"
             title="Press Enter to save, Esc to cancel"
             data-bs-toggle="tooltip"
             data-bs-placement="bottom"
           />
                     <button
             class="btn btn-sm btn-primary ms-1"
-            t-on-click="llmChatThreadHeaderView.saveThreadName"
+            t-on-click="_onSaveName"
             title="Save"
           >
                         <i class="fa fa-check" />
                     </button>
                     <button
             class="btn btn-sm btn-secondary ms-1"
-            t-on-click="llmChatThreadHeaderView.discardThreadNameEdition"
+            t-on-click="_onCancelEditName"
             title="Cancel"
           >
                         <i class="fa fa-times" />
@@ -84,9 +84,9 @@
             style="max-width: 180px;"
           >
                         <span class="text-truncate">
-                            <t t-if="llmChatThreadHeaderView.selectedProvider">
+                            <t t-if="availableProviders.length > 0 and state.selectedProviderId">
                                 <t
-                  t-esc="llmChatThreadHeaderView.selectedProvider?.name or 'Select Provider'"
+                  t-esc="availableProviders.find(p => p.id === state.selectedProviderId)?.name or 'Select Provider'"
                 />
                             </t>
                             <t t-else="">
@@ -96,7 +96,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <t
-              t-foreach="llmProviders"
+              t-foreach="availableProviders"
               t-as="provider"
               t-key="provider.id"
             >
@@ -106,7 +106,7 @@
                   href="#"
                   t-on-click.prevent="() => this.onSelectProvider(provider)"
                   t-att-title="provider.name"
-                  t-attf-class="{{ llmChatThreadHeaderView.selectedProviderId === provider.id ? 'active' : '' }}"
+                  t-attf-class="{{ state.selectedProviderId === provider.id ? 'active' : '' }}"
                 >
                                     <t t-esc="provider?.name or 'Unknown Provider'" />
                                 </a>
@@ -123,13 +123,13 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
             style="max-width: 180px;"
-            t-att-disabled="!llmChatThreadHeaderView.selectedProviderId"
-            title="{{ llmChatThreadHeaderView.selectedProviderId ? (llmChatThreadHeaderView.selectedModel ? llmChatThreadHeaderView.selectedModel.name : 'Select Model') : 'Select a provider first'}}"
+            t-att-disabled="!state.selectedProviderId"
+            title="{{ state.selectedProviderId ? (filteredModels.find(m => m.id === state.selectedModelId)?.name or 'Select Model') : 'Select a provider first'}}"
           >
                         <span class="text-truncate">
-                            <t t-if="llmChatThreadHeaderView.selectedModel">
+                            <t t-if="state.selectedModelId">
                                 <t
-                  t-esc="llmChatThreadHeaderView.selectedModel?.name or 'Select Model'"
+                  t-esc="filteredModels.find(m => m.id === state.selectedModelId)?.name or 'Select Model'"
                 />
                             </t>
                             <t t-else="">
@@ -149,9 +149,9 @@
                 type="text"
                 class="form-control form-control-sm"
                 placeholder="Search models..."
-                t-att-value="state.modelSearchQuery"
-                t-on-input="onModelSearchInput"
-                t-on-click="_preventDropdownClose"
+                t-att-value="state.modelSearchQuery or ''"
+                t-on-input="(ev) => { state.modelSearchQuery = ev.target.value; }"
+                t-on-click="(ev) => { ev.stopPropagation(); }"
                 t-ref="modelSearchInput"
                 aria-label="Search models"
               />
@@ -170,7 +170,7 @@
                       class="dropdown-item text-truncate d-block"
                       t-on-click.prevent="() => onSelectModel(model)"
                       t-att-title="model.name"
-                      t-attf-class="{{ llmChatThreadHeaderView.selectedModelId === model.id ? 'active' : '' }}"
+                      t-attf-class="{{ state.selectedModelId === model.id ? 'active' : '' }}"
                     >
                                             <t t-esc="model?.name or 'Unknown Model'" />
                                         </a>
@@ -218,10 +218,10 @@
             >Available Tools</h6>
                         <div style="max-height: 250px; overflow-y: auto;">
                             <t
-                t-if="llmChat.tools and llmChat.tools.length > 0"
+                t-if="llmChatService.state.llmTools and llmChatService.state.llmTools.length > 0"
               >
                                 <t
-                  t-foreach="llmChat.tools"
+                  t-foreach="llmChatService.state.llmTools"
                   t-as="tool"
                   t-key="tool.id"
                 >
@@ -259,7 +259,7 @@
             <button
         class="o_ThreadViewTopbar_button btn px-2 border-none rounded shadow-none ms-auto flex-shrink-0"
         t-if="isSmall"
-        t-on-click="llmChatThreadHeaderView.openThreadSettings"
+        t-on-click="() => {}"
         title="Settings"
       >
                 <i class="fa fa-lg fa-gear text-700" />

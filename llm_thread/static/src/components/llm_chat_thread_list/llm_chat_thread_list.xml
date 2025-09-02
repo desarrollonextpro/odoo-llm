@@ -4,7 +4,7 @@
         <div
       class="o_LLMChatThreadList d-flex flex-column flex-grow-1 overflow-auto"
     >
-            <t t-if="llmChatView.llmChat.threads.length === 0">
+            <t t-if="threads.length === 0">
                 <div
           class="d-flex flex-column align-items-center justify-content-center flex-grow-1 text-muted p-3"
         >
@@ -15,7 +15,7 @@
             <t t-else="">
                 <div class="o_LLMChatThreadList_items d-flex flex-column">
                     <t
-            t-foreach="llmChatView.llmChat.orderedThreads"
+            t-foreach="threads"
             t-as="thread"
             t-key="thread.id"
           >

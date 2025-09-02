@@ -2,9 +2,13 @@
 
 import { Component, useState, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { LLMChatThreadRelatedRecord } from "@llm_thread/components/llm_chat_thread_related_record/llm_chat_thread_related_record";
 
 export class LLMChatThreadHeader extends Component {
   static template = "llm_thread.LLMChatThreadHeader";
+  static components = {
+    LLMChatThreadRelatedRecord,
+  };
   static props = {
     thread: { type: Object, optional: true },
     onToggleThreadList: { type: Function, optional: true },
@@ -19,6 +23,7 @@ export class LLMChatThreadHeader extends Component {
       tempName: "",
       selectedModelId: null,
       selectedProviderId: null,
+      modelSearchQuery: "",
     });
 
     // Watch for thread changes
@@ -66,12 +71,24 @@ export class LLMChatThreadHeader extends Component {
   }
 
   get filteredModels() {
-    if (!this.state.selectedProviderId) {
-      return this.llmModels;
+    let models = this.llmModels;
+    
+    // Filter by provider if selected
+    if (this.state.selectedProviderId) {
+      models = models.filter(
+        model => model.llmProvider?.id === this.state.selectedProviderId
+      );
     }
-    return this.llmModels.filter(
-      model => model.llmProvider?.id === this.state.selectedProviderId
-    );
+    
+    // Filter by search query if provided
+    if (this.state.modelSearchQuery && this.state.modelSearchQuery.trim()) {
+      const query = this.state.modelSearchQuery.trim().toLowerCase();
+      models = models.filter(model => 
+        model.name && model.name.toLowerCase().includes(query)
+      );
+    }
+    
+    return models;
   }
 
   /**
@@ -152,5 +169,44 @@ export class LLMChatThreadHeader extends Component {
   onSelectProvider(provider) {
     this.state.selectedProviderId = provider.id;
     this.state.selectedModelId = null; // Reset model selection
+  }
+
+  /**
+   * Handle tool selection change
+   */
+  async onToolSelectChange(event, tool) {
+    if (!this.thread) return;
+
+    try {
+      const isChecked = event.target.checked;
+      const currentSelectedTools = this.thread.selectedToolIds || [];
+      
+      let newSelectedTools;
+      if (isChecked) {
+        // Add tool if not already selected
+        if (!currentSelectedTools.includes(tool.id)) {
+          newSelectedTools = [...currentSelectedTools, tool.id];
+        } else {
+          return; // Already selected
+        }
+      } else {
+        // Remove tool from selection
+        newSelectedTools = currentSelectedTools.filter(id => id !== tool.id);
+      }
+
+      // Update on server
+      await this.llmChatService.orm.write("llm.thread", [this.thread.id], {
+        selected_tool_ids: [[6, 0, newSelectedTools]], // Replace with new selection
+      });
+      
+      // Update local thread data
+      if (this.thread) {
+        this.thread.selectedToolIds = newSelectedTools;
+      }
+    } catch (error) {
+      console.error("Error updating tool selection:", error);
+      // Revert checkbox state
+      event.target.checked = !event.target.checked;
+    }
   }
 }

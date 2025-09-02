@@ -5,8 +5,7 @@
             <!-- Thread List Section -->
             <LLMChatSidebar 
                 t-if="isActive"
-                threads="threads"
-                activeThread="activeThread"
+                t-props="sidebarProps"
             />
 
             <!-- Chat Section -->

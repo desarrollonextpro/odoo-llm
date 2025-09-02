@@ -2,10 +2,10 @@
 <templates xml:space="preserve">
     <t t-name="llm_thread.LLMChatSidebar" >
         <!-- Backdrop -->
-        <t t-if="messaging.device.isSmall">
+        <t t-if="isSmall">
             <div
         class="o_LLMChatSidebar_backdrop"
-        t-att-class="{ 'o-visible': llmChatView.isThreadListVisible }"
+        t-att-class="{ 'o-visible': props.isThreadListVisible }"
         t-on-click="_onBackdropClick"
       />
         </t>
@@ -14,8 +14,8 @@
         <div
       class="o_LLMChatSidebar o_DiscussSidebar d-flex flex-column overflow-auto o_Discuss_sidebar flex-shrink-0 h-100 pt-3 border-end bg-light"
       t-att-class="{
-                'o-mobile': messaging.device.isSmall,
-                'o-visible': !messaging.device.isSmall || llmChatView.isThreadListVisible
+                'o-mobile': isSmall,
+                'o-visible': !isSmall || props.isThreadListVisible
             }"
     >
             <!-- New Chat Button -->
@@ -31,7 +31,12 @@
 
             <!-- Thread List -->
             <div class="o_LLMChatSidebar_threadList flex-grow-1 overflow-auto">
-                <LLMChatThreadList record="llmChatView" />
+                <LLMChatThreadList 
+                    t-props="{
+                        threads: props.threads || [],
+                        ...(props.activeThread ? {activeThread: props.activeThread} : {})
+                    }"
+                />
             </div>
         </div>
     </t>

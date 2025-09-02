@@ -3,8 +3,16 @@
 import { Component, useRef, onMounted } from "@odoo/owl";
 
 export class LLMChatComposerTextInput extends Component {
+  static template = "llm_thread.LLMChatComposerTextInput";
+  static props = {
+    value: { type: String, optional: true },
+    placeholder: { type: String, optional: true },
+    disabled: { type: Boolean, optional: true },
+    onInput: { type: Function, optional: true },
+    onKeydown: { type: Function, optional: true },
+  };
+
   setup() {
-    super.setup();
     this.textareaRef = useRef("textarea");
     
     onMounted(() => {
@@ -40,13 +48,3 @@ export class LLMChatComposerTextInput extends Component {
   }
 }
 
-Object.assign(LLMChatComposerTextInput, {
-  props: {
-    value: { type: String, optional: true },
-    placeholder: { type: String, optional: true },
-    disabled: { type: Boolean, optional: true },
-    onInput: { type: Function, optional: true },
-    onKeydown: { type: Function, optional: true },
-  },
-  template: "llm_thread.LLMChatComposerTextInput",
-});

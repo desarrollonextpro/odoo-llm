@@ -2,16 +2,30 @@
 
 import { Component } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { LLMChatThreadList } from "@llm_thread/components/llm_chat_thread_list/llm_chat_thread_list";
 
 export class LLMChatSidebar extends Component {
   static template = "llm_thread.LLMChatSidebar";
+  static components = {
+    LLMChatThreadList,
+  };
   static props = {
-    isThreadListVisible: { type: Boolean },
+    threads: { type: Array, optional: true },
+    activeThread: { type: Object, optional: true },
+    isThreadListVisible: { type: Boolean, optional: true },
     onToggleThreadList: { type: Function, optional: true },
   };
 
   setup() {
     this.llmChatService = useService("llm_chat");
+    this.ui = useService("ui");
+  }
+
+  /**
+   * Check if device is small (mobile)
+   */
+  get isSmall() {
+    return this.ui.isSmall;
   }
 
   /**

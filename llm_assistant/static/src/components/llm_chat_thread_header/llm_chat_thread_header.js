@@ -1,31 +1,27 @@
 /** @odoo-module **/
 
 import { patch } from "@web/core/utils/patch";
+import { LLMChatThreadHeader } from "@llm_thread/components/llm_chat_thread_header/llm_chat_thread_header";
 
-// Wait for the component to be available before patching
+// Patch the LLMChatThreadHeader component
 const patchLLMChatThreadHeader = () => {
   try {
-    // Try to get the component from the registry or import it
-    let LLMChatThreadHeader;
-    
-    try {
-      // Try to import directly
-      const module = require("@llm_thread/components/llm_chat_thread_header/llm_chat_thread_header");
-      LLMChatThreadHeader = module.LLMChatThreadHeader;
-    } catch (importError) {
-      // If import fails, try to get from global scope
-      LLMChatThreadHeader = window.LLMChatThreadHeader;
+    if (!LLMChatThreadHeader) {
+      console.warn("LLM Assistant: LLMChatThreadHeader component not found, retrying...");
+      setTimeout(patchLLMChatThreadHeader, 100);
+      return;
     }
     
-    if (LLMChatThreadHeader) {
-      // Apply the patch
-      patch(LLMChatThreadHeader.prototype, {
+    // Apply the patch
+    patch(LLMChatThreadHeader.prototype, {
         setup() {
           // Call the original setup method
-          this._super(...arguments);
+          super.setup();
           
-          // Initialize assistant-related state
-          this.state.selectedAssistantId = null;
+          // Initialize assistant-related state  
+          if (!this.state.selectedAssistantId) {
+            this.state.selectedAssistantId = null;
+          }
           this.assistantManager = null;
         },
 
@@ -143,14 +139,9 @@ const patchLLMChatThreadHeader = () => {
             console.warn("LLM Assistant: Error in _onThreadChanged:", error);
           }
         },
-      });
-      
-      console.log("LLM Assistant: Successfully patched LLMChatThreadHeader");
-    } else {
-      console.warn("LLM Assistant: LLMChatThreadHeader component not found, retrying...");
-      // Retry after a short delay
-      setTimeout(patchLLMChatThreadHeader, 100);
-    }
+    });
+    
+    console.log("LLM Assistant: Successfully patched LLMChatThreadHeader");
   } catch (error) {
     console.warn("LLM Assistant: Could not patch LLMChatThreadHeader component:", error);
     // Retry after a short delay

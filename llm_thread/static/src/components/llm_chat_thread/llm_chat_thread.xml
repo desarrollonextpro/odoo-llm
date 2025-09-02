@@ -3,7 +3,7 @@
     <t t-name="llm_thread.LLMChatThread" >
         <div class="o_LLMChatThread d-flex flex-column h-100">
             <!-- Header -->
-            <LLMChatThreadHeader record="threadView.llmChatThreadHeaderView" />
+            <LLMChatThreadHeader thread="thread" onToggleThreadList="onToggleThreadList" />
 
             <!-- Messages -->
             <div class="o_LLMChatThread_content flex-grow-1 overflow-auto">
@@ -19,15 +19,15 @@
                 <t t-else="">
                     <!-- Message List -->
                     <LLMChatMessageList
-            record="threadView.messageListView"
-            composerView="threadView.composerView"
+            thread="thread"
+            messages="thread.messages"
           />
                 </t>
             </div>
 
             <!-- Chat Composer - Moved outside scrollable area -->
             <div class="o_LLMChatThread_composer p-3">
-                <LLMChatComposer record="threadView.composerView" />
+                <LLMChatComposer thread="thread" />
             </div>
         </div>
     </t>

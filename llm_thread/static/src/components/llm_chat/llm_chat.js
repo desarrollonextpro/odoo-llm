@@ -2,9 +2,15 @@
 
 import { Component } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { LLMChatSidebar } from "@llm_thread/components/llm_chat_sidebar/llm_chat_sidebar";
+import { LLMChatThread } from "@llm_thread/components/llm_chat_thread/llm_chat_thread";
 
 export class LLMChat extends Component {
   static template = "llm_thread.LLMChat";
+  static components = { 
+    LLMChatSidebar, 
+    LLMChatThread 
+  };
   static props = {
     action: { type: Object, optional: true },
     actionId: { type: Number, optional: true },
@@ -47,6 +53,23 @@ export class LLMChat extends Component {
    */
   get isThreadListVisible() {
     return this.llmChatState.isThreadListVisible;
+  }
+
+  /**
+   * Get props for LLMChatSidebar, only including non-null values
+   */
+  get sidebarProps() {
+    const props = {
+      threads: this.threads || [],
+      isThreadListVisible: this.isThreadListVisible,
+    };
+    
+    // Only include activeThread if it's not null
+    if (this.activeThread) {
+      props.activeThread = this.activeThread;
+    }
+    
+    return props;
   }
 }
 

@@ -2,10 +2,18 @@
 
 import { Component, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { LLMChatComposerTextInput } from "@llm_thread/components/llm_chat_composer_text_input/llm_chat_composer_text_input";
 
 export class LLMChatComposer extends Component {
+  static template = "llm_thread.LLMChatComposer";
+  static components = {
+    LLMChatComposerTextInput,
+  };
+  static props = {
+    thread: { type: Object, optional: true },
+  };
+
   setup() {
-    super.setup();
     this.llmChatService = useService("llm_chat");
     this.state = useState({
       messageInput: "",
@@ -64,7 +72,3 @@ export class LLMChatComposer extends Component {
   }
 }
 
-Object.assign(LLMChatComposer, {
-  props: {},
-  template: "llm_thread.LLMChatComposer",
-});

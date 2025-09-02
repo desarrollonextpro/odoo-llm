@@ -2,11 +2,11 @@
 
 import { Component, useEffect, useRef, useState, onMounted } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
-import { Transition } from "@web/core/transition";
+import { LLMStreamingIndicator } from "@llm_thread/components/llm_streaming_indicator/llm_streaming_indicator";
 
 export class LLMChatMessageList extends Component {
   static template = "llm_thread.LLMChatMessageList";
-  static components = { Transition };
+  static components = { LLMStreamingIndicator };
   static props = {
     thread: { type: Object, optional: true },
     isStreaming: { type: Boolean, optional: true },
